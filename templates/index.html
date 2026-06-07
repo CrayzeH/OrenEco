@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Главная — OrenEco{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="hero-bg">
+        </div>
+        <div class="container">
+            <h1 class="fade-up">Геоэкологический центр Оренбургской области</h1>
+            <p class="fade-up delay-1">Мы изучаем, анализируем и прогнозируем состояние окружающей среды региона. Наша цель – устойчивое развитие и экологическая безопасность для будущих поколений.</p>
+            <a href="/map" class="btn pulse-btn fade-up delay-2">Перейти к карте загрязнения</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title reveal">Наши направления</h2>
+            <div class="cards">
+                <div class="card reveal delay-1">
+                    <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
+                    <div class="card-body">
+                        <h3>Мониторинг воздуха</h3>
+                        <p>Постоянный контроль качества атмосферного воздуха в промышленных и сельских зонах.</p>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+                <div class="card reveal delay-2">
+                    <div class="card-icon"><i class="fa-solid fa-tint"></i></div>
+                    <div class="card-body">
+                        <h3>Анализ водных ресурсов</h3>
+                        <p>Исследование рек, подземных вод и водоёмов на наличие токсичных веществ.</p>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+                <div class="card reveal delay-3">
+                    <div class="card-icon"><i class="fa-solid fa-chart-bar"></i></div>
+                    <div class="card-body">
+                        <h3>Данные и прогнозы</h3>
+                        <p>Сбор данных, моделирование и прогнозирование экологических рисков.</p>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-bg"></div>
+        <div class="container" id="cont1">
+            <h2 class="section-title reveal">Ключевые данные</h2>
+            <div class="stat-numbers">
+                <div class="stat-item reveal delay-1">
+                    <div class="stat" data-count="12">0</div>
+                    <div class="stat-label">Мониторинговых станций</div>
+                </div>
+                <div class="stat-item reveal delay-2">
+                    <div class="stat" data-count="48">0</div>
+                    <div class="stat-label">Районов в системе</div>
+                </div>
+                <div class="stat-item reveal delay-3">
+                    <div class="stat" data-count="92">0</div>
+                    <div class="stat-label">Макс. загрязнение (Новотроицк)</div>
+                </div>
+                <div class="stat-item reveal delay-4">
+                    <div class="stat" data-count="5">0</div>
+                    <div class="stat-label">Лет наблюдений</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-bg"></div>
+        <div class="container">
+            <h2 class="reveal">Присоединяйтесь к защите природы</h2>
+            <p class="reveal delay-1">Получайте актуальные данные, участвуйте в исследованиях и помогайте делать регион чище.</p>
+            <a href="/map" class="btn glow-btn reveal delay-2">Открыть интерактивную карту</a>
+        </div>
+    </section>
+    <script>
+function animateNumbers() {
+    const statNumbers = document.querySelectorAll('.stat[data-count]');
+
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const count = parseInt(element.getAttribute('data-count'));
+                let current = 0;
+                const increment = count / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= count) {
+                        element.textContent = count;
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }, 20);
+                observer.unobserve(element);
+            }
+        });
+    }, observerOptions);
+
+    statNumbers.forEach(el => observer.observe(el));
+}
+
+function initCardGlow() {
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+        });
+    });
+}
+
+// Header при скролле
+function initHeaderScroll() {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
+
+// Анимация появления элементов
+function initRevealAnimations() {
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    revealElements.forEach(el => observer.observe(el));
+}
+
+// Корректный параллакс с requestAnimationFrame
+function initParallax() {
+    const layers = document.querySelectorAll('.parallax-layer');
+    if (layers.length === 0) return;
+
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const scrolled = window.pageYOffset;
+
+                // Разная скорость для каждого слоя
+                if (layers[0]) layers[0].style.transform = `translateY(${scrolled * 0.15}px)`;
+                if (layers[1]) layers[1].style.transform = `translateY(${scrolled * 0.08}px)`;
+                if (layers[2]) layers[2].style.transform = `translateY(${scrolled * 0.03}px)`;
+
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+}
+
+// Бургер-меню
+function initBurgerMenu() {
+    const burger = document.querySelector('.burger');
+    const mobileMenu = document.querySelector('.mobile-menu');
+
+    if (burger && mobileMenu) {
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+    }
+}
+
+// Плавный параллакс для секций при наведении (опционально)
+function initMouseParallax() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    hero.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth - 0.5;
+        const mouseY = e.clientY / window.innerHeight - 0.5;
+
+        const layers = document.querySelectorAll('.parallax-layer');
+        if (layers[0]) layers[0].style.transform = `translate(${mouseX * 20}px, ${mouseY * 20}px)`;
+        if (layers[1]) layers[1].style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
+    });
+
+    hero.addEventListener('mouseleave', () => {
+        const layers = document.querySelectorAll('.parallax-layer');
+        if (layers[0]) layers[0].style.transform = 'translate(0, 0)';
+        if (layers[1]) layers[1].style.transform = 'translate(0, 0)';
+    });
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    animateNumbers();
+    initCardGlow();
+    initHeaderScroll();
+    initRevealAnimations();
+    initParallax();
+    initBurgerMenu();
+    initMouseParallax();
+});
+    </script>
+{% endblock %}

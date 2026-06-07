@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}Карта загрязнения — OrenEco{% endblock %}
+
+{% block content %}
+<style>
+    .map-container {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 70px);
+        overflow: hidden;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .map-panel,
+    .map-legend {
+        position: absolute;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(46, 125, 50, 0.18);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    }
+
+    .map-panel {
+        top: 20px;
+        left: 20px;
+        border-radius: 16px;
+        padding: 14px 16px;
+        min-width: 230px;
+    }
+
+    .map-panel h3,
+    .map-legend h4 {
+        color: #2e7d32;
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .layer-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #263b28;
+        font-size: 13px;
+        margin: 8px 0;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .layer-toggle input {
+        accent-color: #2e7d32;
+        width: 16px;
+        height: 16px;
+    }
+
+    .map-source-note {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e3eadf;
+        color: #5f735f;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+
+    .layer-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .layer-action {
+        border: 1px solid #c9ddc6;
+        background: #f5fbf4;
+        color: #2e7d32;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .layer-action:hover,
+    .layer-action.active {
+        background: #2e7d32;
+        color: #fff;
+        border-color: #2e7d32;
+    }
+
+    .map-legend {
+        bottom: 20px;
+        left: 20px;
+        border-radius: 12px;
+        padding: 12px 16px;
+        min-width: 220px;
+    }
+
+    .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .legend-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+
+    .legend-color.circle {
+        border-radius: 50%;
+    }
+
+    .legend-color.good { background: #2e7d32; }
+    .legend-color.fair { background: #81c784; }
+    .legend-color.moderate { background: #ffeb3b; border: 1px solid #c6a700; }
+    .legend-color.poor { background: #ff9800; }
+    .legend-color.bad { background: #d32f2f; }
+    .legend-color.forest { background: rgba(46, 125, 50, 0.58); border: 1px solid #1b5e20; }
+    .legend-color.protected { background: rgba(255, 152, 0, 0.64); border: 1px solid #e65100; }
+    .legend-color.boundary {
+        background: transparent;
+        border-top: 3px dashed #2e7d32;
+        height: 8px;
+        border-radius: 0;
+    }
+
+    .legend-text {
+        color: #333;
+        font-size: 11px;
+    }
+
+    .divider {
+        height: 1px;
+        background: #e0e0e0;
+        margin: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+        .map-container {
+            height: calc(100vh - 60px);
+            margin-top: 60px;
+        }
+
+        .map-panel {
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            min-width: auto;
+        }
+
+        .map-legend {
+            bottom: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            min-width: 170px;
+        }
+
+        .legend-text,
+        .map-source-note {
+            font-size: 10px;
+        }
+
+    }
+</style>
+
+<div class="map-container">
+    <div id="map"></div>
+
+    <div class="map-panel">
+        <h3>Слои карты</h3>
+        <label class="layer-toggle">
+            <input type="checkbox" id="pollution-layer-toggle" checked>
+            <span>Загрязнение воздуха</span>
+        </label>
+        <label class="layer-toggle">
+            <input type="checkbox" id="forest-layer-toggle" checked>
+            <span>Леса и охраняемые территории</span>
+        </label>
+        <div class="layer-actions">
+            <button class="layer-action active" type="button" data-layer-mode="all">Все слои</button>
+            <button class="layer-action" type="button" data-layer-mode="pollution">Только загрязнение</button>
+            <button class="layer-action" type="button" data-layer-mode="forests">Только леса</button>
+        </div>
+        <div class="map-source-note">
+            Карта читает данные из локальной базы. Обновление внешних источников выполняется отдельно администратором.
+        </div>
+    </div>
+
+    <div class="map-legend">
+        <h4>Легенда</h4>
+        <div class="legend-row">
+            <div class="legend-color good circle"></div>
+            <span class="legend-text">AQI 0-20 хорошее качество</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-color fair circle"></div>
+            <span class="legend-text">AQI 21-40 удовлетворительное</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-color moderate circle"></div>
+            <span class="legend-text">AQI 41-60 умеренное</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-color poor circle"></div>
+            <span class="legend-text">AQI 61-80 плохое</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-color bad circle"></div>
+            <span class="legend-text">AQI 81+ очень плохое</span>
+        </div>
+        <div class="divider"></div>
+        <div class="legend-row">
+            <div class="legend-color forest"></div>
+            <span class="legend-text">Лесная территория</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-color protected"></div>
+            <span class="legend-text">Особо охраняемая территория</span>
+        </div>
+        <div class="divider"></div>
+        <div class="legend-row">
+            <div class="legend-color boundary"></div>
+            <span class="legend-text">Граница Оренбургской области</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU"></script>
+<script>
+    function getPollutionColor(pollution) {
+        if (pollution <= 20) return '#2e7d32';
+        if (pollution <= 40) return '#81c784';
+        if (pollution <= 60) return '#ffeb3b';
+        if (pollution <= 80) return '#ff9800';
+        return '#d32f2f';
+    }
+
+    function getPollutionLabel(pollution) {
+        if (pollution <= 20) return 'Хорошее качество воздуха';
+        if (pollution <= 40) return 'Удовлетворительное качество воздуха';
+        if (pollution <= 60) return 'Умеренное загрязнение';
+        if (pollution <= 80) return 'Плохое качество воздуха';
+        return 'Очень плохое качество воздуха';
+    }
+
+    function getForestColor(status) {
+        if (status === 'protected') return 'rgba(255, 152, 0, 0.62)';
+        if (status === 'forest') return 'rgba(46, 125, 50, 0.55)';
+        return 'rgba(117, 117, 117, 0.55)';
+    }
+
+    function getForestBorderColor(status) {
+        if (status === 'protected') return '#e65100';
+        if (status === 'forest') return '#1b5e20';
+        return '#616161';
+    }
+
+    function getForestStatusText(status) {
+        if (status === 'protected') return 'Особо охраняемая природная территория';
+        if (status === 'forest') return 'Лесная территория';
+        return 'Неизвестный статус';
+    }
+
+    function sourceText(source) {
+        if (source === 'overpass') return 'OpenStreetMap / Overpass API';
+        if (source === 'openaq') return 'OpenAQ';
+        if (source === 'openmeteo') return 'Open-Meteo Air Quality';
+        return 'Локальная база';
+    }
+
+    function pollutionBalloonBody(point, pollutants) {
+        return `
+            <div style="font-size: 13px; padding: 5px;">
+                <p><strong>Уровень:</strong> ${getPollutionLabel(point.pollution)}</p>
+                <p><strong>Индекс AQI:</strong> ${point.pollution}</p>
+                <p><strong>Показатели:</strong> ${pollutants || 'нет данных'}</p>
+                <p><strong>Источник:</strong> ${sourceText(point.source)}</p>
+                <p><strong>Дата:</strong> ${point.measured_at || 'не указана'}</p>
+                <p><strong>Описание:</strong> ${point.description || 'нет описания'}</p>
+            </div>
+        `;
+    }
+
+    function setCollectionVisible(map, collection, visible) {
+        if (visible) {
+            map.geoObjects.add(collection);
+        } else {
+            map.geoObjects.remove(collection);
+        }
+    }
+
+    ymaps.ready(function() {
+        const center = [51.7682, 55.0970];
+        const map = new ymaps.Map('map', {
+            center: center,
+            zoom: 7,
+            controls: ['zoomControl', 'fullscreenControl']
+        });
+
+        const forestCollection = new ymaps.GeoObjectCollection();
+        const pollutionCollection = new ymaps.GeoObjectCollection();
+        const boundaryCollection = new ymaps.GeoObjectCollection();
+
+        fetch('/api/forests')
+            .then(response => response.json())
+            .then(forests => {
+                forests.forEach(forest => {
+                    let coordinates = forest.coordinates || [];
+                    if (typeof coordinates === 'string') {
+                        coordinates = JSON.parse(coordinates);
+                    }
+                    if (!Array.isArray(coordinates) || coordinates.length < 4) {
+                        return;
+                    }
+
+                    const polygon = new ymaps.Polygon(
+                        [coordinates],
+                        {
+                            balloonContentHeader: `<b>${forest.name}</b>`,
+                            balloonContentBody: `
+                                <div style="font-size: 13px; padding: 5px;">
+                                    <p><strong>Тип:</strong> ${forest.category || getForestStatusText(forest.status)}</p>
+                                    <p><strong>Статус:</strong> ${getForestStatusText(forest.status)}</p>
+                                    <p><strong>Источник:</strong> ${sourceText(forest.source)}</p>
+                                    <p><strong>Описание:</strong> ${forest.description || 'нет описания'}</p>
+                                </div>
+                            `,
+                            hintContent: forest.name
+                        },
+                        {
+                            fillColor: getForestColor(forest.status),
+                            strokeColor: getForestBorderColor(forest.status),
+                            strokeWidth: 2,
+                            strokeOpacity: 0.85,
+                            fillOpacity: 0.5
+                        }
+                    );
+
+                    forestCollection.add(polygon);
+                });
+
+                map.geoObjects.add(forestCollection);
+            })
+            .catch(error => console.error('Ошибка загрузки лесов:', error));
+
+        fetch('/api/pollution')
+            .then(response => response.json())
+            .then(points => {
+                points.forEach(point => {
+                    const color = getPollutionColor(point.pollution);
+                    const radius = Math.max(1200, Math.min(9000, point.pollution * 90));
+                    const pollutants = Array.isArray(point.pollutants) ? point.pollutants.join(', ') : '';
+                    const balloonBody = pollutionBalloonBody(point, pollutants);
+
+                    const circle = new ymaps.Circle(
+                        [[point.lat, point.lon], radius],
+                        {
+                            balloonContentHeader: `<b>${point.name}</b>`,
+                            balloonContentBody: balloonBody,
+                            hintContent: point.name
+                        },
+                        {
+                            fillColor: color,
+                            strokeColor: color,
+                            strokeWidth: 2,
+                            fillOpacity: 0.28,
+                            strokeOpacity: 0.72
+                        }
+                    );
+
+                    const marker = new ymaps.Placemark(
+                        [point.lat, point.lon],
+                        {
+                            balloonContentHeader: `<b>${point.name}</b>`,
+                            balloonContentBody: balloonBody,
+                            hintContent: point.name
+                        },
+                        {
+                            preset: 'islands#circleIcon',
+                            iconColor: color
+                        }
+                    );
+
+                    pollutionCollection.add(circle);
+                    pollutionCollection.add(marker);
+                });
+
+                map.geoObjects.add(pollutionCollection);
+            })
+            .catch(error => console.error('Ошибка загрузки загрязнения:', error));
+
+        fetch('/api/region-boundary')
+            .then(response => response.json())
+            .then(boundary => {
+                const segments = boundary.coordinates || [];
+                segments.forEach(segment => {
+                    if (!Array.isArray(segment) || segment.length < 2) return;
+
+                    const line = new ymaps.Polyline(
+                        segment,
+                        {
+                            hintContent: boundary.name || 'Оренбургская область'
+                        },
+                        {
+                            strokeColor: '#2e7d32',
+                            strokeWidth: 3,
+                            strokeOpacity: 0.9,
+                            strokeStyle: 'dash'
+                        }
+                    );
+                    boundaryCollection.add(line);
+                });
+
+                if (boundaryCollection.getLength && boundaryCollection.getLength() > 0) {
+                    map.geoObjects.add(boundaryCollection);
+                }
+            })
+            .catch(error => console.error('Ошибка загрузки границы области:', error));
+
+        document.getElementById('forest-layer-toggle').addEventListener('change', function(event) {
+            setCollectionVisible(map, forestCollection, event.target.checked);
+            syncLayerActionState();
+        });
+
+        document.getElementById('pollution-layer-toggle').addEventListener('change', function(event) {
+            setCollectionVisible(map, pollutionCollection, event.target.checked);
+            syncLayerActionState();
+        });
+
+        function applyLayerMode(mode) {
+            const pollutionToggle = document.getElementById('pollution-layer-toggle');
+            const forestToggle = document.getElementById('forest-layer-toggle');
+            pollutionToggle.checked = mode !== 'forests';
+            forestToggle.checked = mode !== 'pollution';
+            setCollectionVisible(map, pollutionCollection, pollutionToggle.checked);
+            setCollectionVisible(map, forestCollection, forestToggle.checked);
+            syncLayerActionState();
+        }
+
+        function syncLayerActionState() {
+            const pollutionChecked = document.getElementById('pollution-layer-toggle').checked;
+            const forestChecked = document.getElementById('forest-layer-toggle').checked;
+            let activeMode = 'all';
+            if (pollutionChecked && !forestChecked) activeMode = 'pollution';
+            if (!pollutionChecked && forestChecked) activeMode = 'forests';
+
+            document.querySelectorAll('[data-layer-mode]').forEach(button => {
+                button.classList.toggle('active', button.dataset.layerMode === activeMode);
+            });
+        }
+
+        document.querySelectorAll('[data-layer-mode]').forEach(button => {
+            button.addEventListener('click', function() {
+                applyLayerMode(button.dataset.layerMode);
+            });
+        });
+
+        const resetButton = new ymaps.control.Button({
+            data: { content: 'Сбросить вид' },
+            options: { float: 'left', position: { top: 10, left: 10 } }
+        });
+
+        resetButton.events.add('click', function() {
+            map.setCenter(center, 7);
+        });
+
+        map.controls.add(resetButton);
+    });
+</script>
+{% endblock %}

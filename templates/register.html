@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — OrenEco{% endblock %}
+
+{% block content %}
+<style>
+    .auth-container {
+        min-height: calc(100vh - 300px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 32px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .auth-card h2 {
+        color: #2e7d32;
+        margin-bottom: 0.5rem;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 16px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 32, 0.1);
+    }
+
+    .btn-auth {
+        width: 100%;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-auth:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .auth-footer a {
+        color: #2e7d32;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    .success-message {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    .loader {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid white;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        margin-right: 8px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Создать аккаунт</h2>
+        <p class="auth-subtitle">Присоединяйтесь к экологическому сообществу</p>
+
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+
+        <form id="register-form">
+            <div class="form-group">
+                <label>Имя пользователя *</label>
+                <input type="text" id="username" required placeholder="Введите имя пользователя">
+            </div>
+
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="email" required placeholder="example@mail.ru">
+            </div>
+
+            <div class="form-group">
+                <label>Пароль *</label>
+                <input type="password" id="password" required placeholder="Минимум 6 символов">
+            </div>
+
+            <div class="form-group">
+                <label>ФИО (необязательно)</label>
+                <input type="text" id="full_name" placeholder="Иванов Иван Иванович">
+            </div>
+
+            <button type="submit" class="btn-auth" id="submit-btn">
+                <span></span> Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const full_name = document.getElementById('full_name').value;
+        const errorDiv = document.getElementById('error-message');
+        const successDiv = document.getElementById('success-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Скрываем предыдущие сообщения
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        // Валидация
+        if (password.length < 6) {
+            errorDiv.textContent = 'Пароль должен быть не менее 6 символов';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Показываем загрузку
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loader"></span> Регистрация...';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, email, password, full_name})
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                successDiv.textContent = 'Регистрация успешна! Перенаправление...';
+                successDiv.style.display = 'block';
+
+                // Перенаправляем в профиль
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/profile';
+                }, 1000);
+            } else {
+                errorDiv.textContent = data.error;
+                errorDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Ошибка соединения. Попробуйте позже.';
+            errorDiv.style.display = 'block';
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

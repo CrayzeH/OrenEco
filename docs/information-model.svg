@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; fill: #111; }
+      .table { fill: #fff; stroke: #555; stroke-width: 2; }
+      .head { fill: #f1f5f9; stroke: #555; stroke-width: 1.5; }
+      .cell { fill: #fff; stroke: #777; stroke-width: 1; }
+      .name { font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #111; }
+      .text { font-family: Arial, sans-serif; font-size: 15px; fill: #111; }
+      .small { font-family: Arial, sans-serif; font-size: 13px; fill: #333; }
+      .desc { font-family: Arial, sans-serif; font-size: 14px; fill: #333; }
+      .link { stroke: #666; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1050" fill="#ffffff"/>
+  <text x="800" y="38" text-anchor="middle" class="title">Информационная модель веб-приложения «OrenEco»</text>
+
+  <!-- users -->
+  <g id="users" transform="translate(615 70)">
+    <rect width="350" height="245" class="table"/>
+    <rect width="350" height="32" class="head"/>
+    <text x="175" y="22" text-anchor="middle" class="name">users</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="185" height="24" class="cell"/><rect x="280" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="188" y="17" text-anchor="middle" class="text">id</text><text x="315" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="185" height="24" class="cell"/><rect x="280" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="188" y="41" text-anchor="middle" class="text">username</text><text x="315" y="41" text-anchor="middle" class="text">UNIQUE</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="185" height="24" class="cell"/><rect x="280" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="188" y="65" text-anchor="middle" class="text">email</text><text x="315" y="65" text-anchor="middle" class="text">UNIQUE</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="185" height="24" class="cell"/><rect x="280" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="188" y="89" text-anchor="middle" class="text">password_hash</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="185" height="24" class="cell"/><rect x="280" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">TEXT</text><text x="188" y="113" text-anchor="middle" class="text">role</text>
+      <rect x="0" y="120" width="95" height="24" class="cell"/><rect x="95" y="120" width="185" height="24" class="cell"/><rect x="280" y="120" width="70" height="24" class="cell"/>
+      <text x="48" y="137" text-anchor="middle" class="text">BOOLEAN</text><text x="188" y="137" text-anchor="middle" class="text">is_active</text>
+      <rect x="0" y="144" width="95" height="24" class="cell"/><rect x="95" y="144" width="185" height="24" class="cell"/><rect x="280" y="144" width="70" height="24" class="cell"/>
+      <text x="48" y="161" text-anchor="middle" class="text">TIMESTAMP</text><text x="188" y="161" text-anchor="middle" class="text">created_at</text>
+    </g>
+    <text x="175" y="228" text-anchor="middle" class="desc">Пользователи системы.</text>
+  </g>
+
+  <!-- articles -->
+  <g id="articles" transform="translate(70 95)">
+    <rect width="370" height="270" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">articles</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="198" y="41" text-anchor="middle" class="text">title</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="198" y="65" text-anchor="middle" class="text">authors</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="198" y="89" text-anchor="middle" class="text">category</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="205" height="24" class="cell"/><rect x="300" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">TEXT</text><text x="198" y="113" text-anchor="middle" class="text">content</text>
+      <rect x="0" y="120" width="95" height="24" class="cell"/><rect x="95" y="120" width="205" height="24" class="cell"/><rect x="300" y="120" width="70" height="24" class="cell"/>
+      <text x="48" y="137" text-anchor="middle" class="text">INTEGER</text><text x="198" y="137" text-anchor="middle" class="text">created_by</text><text x="335" y="137" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="144" width="95" height="24" class="cell"/><rect x="95" y="144" width="205" height="24" class="cell"/><rect x="300" y="144" width="70" height="24" class="cell"/>
+      <text x="48" y="161" text-anchor="middle" class="text">TIMESTAMP</text><text x="198" y="161" text-anchor="middle" class="text">created_at</text>
+    </g>
+    <text x="185" y="252" text-anchor="middle" class="desc">Информационные материалы.</text>
+  </g>
+
+  <!-- comments -->
+  <g id="comments" transform="translate(70 425)">
+    <rect width="370" height="210" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">article_comments</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">INTEGER</text><text x="198" y="41" text-anchor="middle" class="text">article_id</text><text x="335" y="41" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">INTEGER</text><text x="198" y="65" text-anchor="middle" class="text">user_id</text><text x="335" y="65" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="198" y="89" text-anchor="middle" class="text">comment</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="205" height="24" class="cell"/><rect x="300" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">TIMESTAMP</text><text x="198" y="113" text-anchor="middle" class="text">created_at</text>
+    </g>
+    <text x="185" y="193" text-anchor="middle" class="desc">Комментарии к статьям.</text>
+  </g>
+
+  <!-- sessions -->
+  <g id="sessions" transform="translate(70 700)">
+    <rect width="370" height="190" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">sessions</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">INTEGER</text><text x="198" y="41" text-anchor="middle" class="text">user_id</text><text x="335" y="41" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="198" y="65" text-anchor="middle" class="text">session_token</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TIMESTAMP</text><text x="198" y="89" text-anchor="middle" class="text">expires_at</text>
+    </g>
+    <text x="185" y="173" text-anchor="middle" class="desc">Сессии пользователей.</text>
+  </g>
+
+  <!-- projects -->
+  <g id="projects" transform="translate(615 390)">
+    <rect width="350" height="270" class="table"/>
+    <rect width="350" height="32" class="head"/>
+    <text x="175" y="22" text-anchor="middle" class="name">projects</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="185" height="24" class="cell"/><rect x="280" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="188" y="17" text-anchor="middle" class="text">id</text><text x="315" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="185" height="24" class="cell"/><rect x="280" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="188" y="41" text-anchor="middle" class="text">title</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="185" height="24" class="cell"/><rect x="280" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="188" y="65" text-anchor="middle" class="text">type</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="185" height="24" class="cell"/><rect x="280" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="188" y="89" text-anchor="middle" class="text">status</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="185" height="24" class="cell"/><rect x="280" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">TEXT</text><text x="188" y="113" text-anchor="middle" class="text">region</text>
+      <rect x="0" y="120" width="95" height="24" class="cell"/><rect x="95" y="120" width="185" height="24" class="cell"/><rect x="280" y="120" width="70" height="24" class="cell"/>
+      <text x="48" y="137" text-anchor="middle" class="text">REAL</text><text x="188" y="137" text-anchor="middle" class="text">total_area</text>
+      <rect x="0" y="144" width="95" height="24" class="cell"/><rect x="95" y="144" width="185" height="24" class="cell"/><rect x="280" y="144" width="70" height="24" class="cell"/>
+      <text x="48" y="161" text-anchor="middle" class="text">INTEGER</text><text x="188" y="161" text-anchor="middle" class="text">points</text>
+    </g>
+    <text x="175" y="252" text-anchor="middle" class="desc">Экологические проекты.</text>
+  </g>
+
+  <!-- expertise -->
+  <g id="expertise" transform="translate(615 725)">
+    <rect width="350" height="220" class="table"/>
+    <rect width="350" height="32" class="head"/>
+    <text x="175" y="22" text-anchor="middle" class="name">user_expertise_results</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="185" height="24" class="cell"/><rect x="280" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="188" y="17" text-anchor="middle" class="text">id</text><text x="315" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="185" height="24" class="cell"/><rect x="280" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">INTEGER</text><text x="188" y="41" text-anchor="middle" class="text">user_id</text><text x="315" y="41" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="185" height="24" class="cell"/><rect x="280" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">INTEGER</text><text x="188" y="65" text-anchor="middle" class="text">project_id</text><text x="315" y="65" text-anchor="middle" class="text">FK</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="185" height="24" class="cell"/><rect x="280" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="188" y="89" text-anchor="middle" class="text">user_decision</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="185" height="24" class="cell"/><rect x="280" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">REAL</text><text x="188" y="113" text-anchor="middle" class="text">ai_score</text>
+    </g>
+    <text x="175" y="203" text-anchor="middle" class="desc">Результаты экспертизы.</text>
+  </g>
+
+  <!-- pollution -->
+  <g id="pollution" transform="translate(1160 95)">
+    <rect width="370" height="290" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">pollution_points</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="198" y="41" text-anchor="middle" class="text">name</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">REAL</text><text x="198" y="65" text-anchor="middle" class="text">lat</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">REAL</text><text x="198" y="89" text-anchor="middle" class="text">lon</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="205" height="24" class="cell"/><rect x="300" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">INTEGER</text><text x="198" y="113" text-anchor="middle" class="text">pollution</text>
+      <rect x="0" y="120" width="95" height="24" class="cell"/><rect x="95" y="120" width="205" height="24" class="cell"/><rect x="300" y="120" width="70" height="24" class="cell"/>
+      <text x="48" y="137" text-anchor="middle" class="text">TEXT</text><text x="198" y="137" text-anchor="middle" class="text">pollutants</text>
+      <rect x="0" y="144" width="95" height="24" class="cell"/><rect x="95" y="144" width="205" height="24" class="cell"/><rect x="300" y="144" width="70" height="24" class="cell"/>
+      <text x="48" y="161" text-anchor="middle" class="text">TEXT</text><text x="198" y="161" text-anchor="middle" class="text">description</text>
+      <rect x="0" y="168" width="95" height="24" class="cell"/><rect x="95" y="168" width="205" height="24" class="cell"/><rect x="300" y="168" width="70" height="24" class="cell"/>
+      <text x="48" y="185" text-anchor="middle" class="text">TEXT</text><text x="198" y="185" text-anchor="middle" class="text">source</text>
+    </g>
+    <text x="185" y="272" text-anchor="middle" class="desc">Точки загрязнения воздуха.</text>
+  </g>
+
+  <!-- forests -->
+  <g id="forests" transform="translate(1160 455)">
+    <rect width="370" height="230" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">forest_areas</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="198" y="41" text-anchor="middle" class="text">name</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="198" y="65" text-anchor="middle" class="text">coordinates</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="198" y="89" text-anchor="middle" class="text">status</text>
+      <rect x="0" y="96" width="95" height="24" class="cell"/><rect x="95" y="96" width="205" height="24" class="cell"/><rect x="300" y="96" width="70" height="24" class="cell"/>
+      <text x="48" y="113" text-anchor="middle" class="text">TEXT</text><text x="198" y="113" text-anchor="middle" class="text">category</text>
+      <rect x="0" y="120" width="95" height="24" class="cell"/><rect x="95" y="120" width="205" height="24" class="cell"/><rect x="300" y="120" width="70" height="24" class="cell"/>
+      <text x="48" y="137" text-anchor="middle" class="text">TEXT</text><text x="198" y="137" text-anchor="middle" class="text">source</text>
+    </g>
+    <text x="185" y="212" text-anchor="middle" class="desc">Лесные и охраняемые территории.</text>
+  </g>
+
+  <!-- boundaries -->
+  <g id="boundaries" transform="translate(1160 750)">
+    <rect width="370" height="170" class="table"/>
+    <rect width="370" height="32" class="head"/>
+    <text x="185" y="22" text-anchor="middle" class="name">region_boundaries</text>
+    <g transform="translate(0 32)">
+      <rect x="0" y="0" width="95" height="24" class="cell"/><rect x="95" y="0" width="205" height="24" class="cell"/><rect x="300" y="0" width="70" height="24" class="cell"/>
+      <text x="48" y="17" text-anchor="middle" class="text">INTEGER</text><text x="198" y="17" text-anchor="middle" class="text">id</text><text x="335" y="17" text-anchor="middle" class="text">PK</text>
+      <rect x="0" y="24" width="95" height="24" class="cell"/><rect x="95" y="24" width="205" height="24" class="cell"/><rect x="300" y="24" width="70" height="24" class="cell"/>
+      <text x="48" y="41" text-anchor="middle" class="text">TEXT</text><text x="198" y="41" text-anchor="middle" class="text">name</text>
+      <rect x="0" y="48" width="95" height="24" class="cell"/><rect x="95" y="48" width="205" height="24" class="cell"/><rect x="300" y="48" width="70" height="24" class="cell"/>
+      <text x="48" y="65" text-anchor="middle" class="text">TEXT</text><text x="198" y="65" text-anchor="middle" class="text">coordinates</text>
+      <rect x="0" y="72" width="95" height="24" class="cell"/><rect x="95" y="72" width="205" height="24" class="cell"/><rect x="300" y="72" width="70" height="24" class="cell"/>
+      <text x="48" y="89" text-anchor="middle" class="text">TEXT</text><text x="198" y="89" text-anchor="middle" class="text">source</text>
+    </g>
+    <text x="185" y="153" text-anchor="middle" class="desc">Граница Оренбургской области.</text>
+  </g>
+
+  <!-- relations -->
+  <path d="M615 175 C540 175 505 210 440 230" class="link"/>
+  <path d="M615 220 C520 250 500 510 440 530" class="link"/>
+  <path d="M615 260 C520 360 505 765 440 795" class="link"/>
+  <path d="M790 315 C790 350 790 360 790 390" class="link"/>
+  <path d="M790 660 C790 690 790 700 790 725" class="link"/>
+  <path d="M615 820 C520 790 510 620 440 565" class="link"/>
+  <path d="M965 510 C1030 500 1080 255 1160 240" class="link"/>
+  <path d="M965 535 C1045 535 1080 570 1160 570" class="link"/>
+  <path d="M965 560 C1050 590 1080 815 1160 835" class="link"/>
+
+  <text x="48" y="1005" class="small">Рисунок К.1 - Информационная модель веб-приложения «OrenEco»</text>
+</svg>

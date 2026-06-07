@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+
+{% block title %}Создание статьи — OrenEco{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ========== АНИМАЦИИ ПОЯВЛЕНИЯ (параллакс эффект) ========== */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.15s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.45s;
+    }
+
+    .delay-4 {
+        animation-delay: 0.6s;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .create-page {
+        min-height: calc(100vh - 300px);
+        background: #f7f9f7;
+        padding: 2rem;
+    }
+
+    .create-container {
+        max-width: 900px;
+        margin: 100px auto;
+    }
+
+    .create-card {
+        background: white;
+        border-radius: 28px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #eef2f0;
+    }
+
+    .create-card h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a3b1e;
+        margin-bottom: 0.5rem;
+    }
+
+    .create-card .subtitle {
+        color: #6a7e6c;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eef2f0;
+    }
+
+    /* AI Generate Section */
+    .ai-generate {
+        background: #fafdf9;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e8ede6;
+    }
+
+    .ai-generate h3 {
+        color: #1a3b1e;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-generate h3 i {
+        color: #2e7d32;
+        font-size: 1rem;
+    }
+
+    .ai-input-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .ai-input-group input {
+        flex: 2;
+        padding: 12px 16px;
+        border: 1px solid #e0e8e0;
+        border-radius: 100px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .ai-input-group input:focus {
+        outline: none;
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.08);
+    }
+
+    .ai-input-group select {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #e0e8e0;
+        border-radius: 100px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .ai-input-group select:focus {
+        outline: none;
+        border-color: #2e7d32;
+    }
+
+    .btn-ai {
+        background: #ff9800;
+        color: white;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 100px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-ai i {
+        font-size: 0.8rem;
+    }
+
+    .btn-ai:hover {
+        background: #f57c00;
+        transform: translateY(-1px);
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e2a;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group label i {
+        color: #2e7d32;
+        width: 20px;
+        margin-right: 6px;
+    }
+
+    .form-group label .required {
+        color: #f44336;
+        margin-left: 4px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e0e8e0;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.08);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        background: #2e7d32;
+        color: white;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 100px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-submit i {
+        font-size: 0.9rem;
+    }
+
+    .btn-submit:hover {
+        background: #1b5e20;
+        transform: translateY(-2px);
+    }
+
+    /* Loading State */
+    .btn-submit:disabled,
+    .btn-ai:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    @media (max-width: 768px) {
+        .create-page {
+            padding: 1rem;
+        }
+
+        .create-card {
+            padding: 1.5rem;
+        }
+
+        .create-card h1 {
+            font-size: 1.5rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .ai-input-group {
+            flex-direction: column;
+        }
+
+        .ai-input-group input,
+        .ai-input-group select,
+        .btn-ai {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="create-page">
+    <div class="create-container">
+        <div class="create-card">
+            <h1 class="fade-up">
+                <i class="fas fa-feather-alt" style="color: #2e7d32; margin-right: 10px;"></i>
+                Создание научной статьи
+            </h1>
+            <p class="subtitle fade-up delay-1">Поделитесь вашими исследованиями с экологическим сообществом</p>
+
+            <!-- AI Generate Section -->
+            <div class="ai-generate fade-up delay-2">
+                <h3>
+                    <i class="fas fa-robot"></i>
+                    <span>Сгенерировать черновик с помощью ИИ</span>
+                </h3>
+                <div class="ai-input-group">
+                    <input type="text" id="ai-topic" placeholder="Тема статьи...">
+                    <select id="ai-category">
+                        <option value="ОВОС">ОВОС</option>
+                        <option value="Экология">Экология</option>
+                        <option value="Загрязнение">Загрязнение</option>
+                        <option value="Лесное хозяйство">Лесное хозяйство</option>
+                    </select>
+                    <button class="btn-ai" id="generate-btn">
+                        <i class="fas fa-magic"></i>
+                        <span>Сгенерировать</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Article Form -->
+            <form id="article-form">
+                <div class="form-row">
+                    <div class="form-group fade-up delay-3">
+                        <label>
+                            <i class="fas fa-heading"></i>
+                            Название статьи
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" id="title" placeholder="Введите название статьи..." required>
+                    </div>
+                    <div class="form-group fade-up delay-3">
+                        <label>
+                            <i class="fas fa-tag"></i>
+                            Категория
+                            <span class="required">*</span>
+                        </label>
+                        <select id="category" required>
+                            <option value="ОВОС">ОВОС</option>
+                            <option value="Экология">Экология</option>
+                            <option value="Загрязнение">Загрязнение</option>
+                            <option value="Лесное хозяйство">Лесное хозяйство</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group fade-up delay-4">
+                    <label>
+                        <i class="fas fa-users"></i>
+                        Авторы
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="authors" placeholder="Иванов И.И., Петров П.П." required>
+                </div>
+
+                <div class="form-group fade-up" style="animation-delay: 0.15s;">
+                    <label>
+                        <i class="fas fa-align-left"></i>
+                        Аннотация
+                        <span class="required">*</span>
+                    </label>
+                    <textarea id="summary" placeholder="Краткое описание статьи, основные тезисы..." required></textarea>
+                </div>
+
+                <div class="form-group fade-up" style="animation-delay: 0.3s;">
+                    <label>
+                        <i class="fas fa-key"></i>
+                        Ключевые слова
+                    </label>
+                    <input type="text" id="keywords" placeholder="экология, ООПТ, загрязнение (через запятую)">
+                </div>
+
+                <div class="form-group fade-up" style="animation-delay: 0.45s;">
+                    <label>
+                        <i class="fas fa-file-alt"></i>
+                        Содержание статьи
+                        <span class="required">*</span>
+                    </label>
+                    <textarea id="content" rows="15" placeholder="&lt;h2&gt;Введение&lt;/h2&gt;&#10;&lt;p&gt;Текст статьи...&lt;/p&gt;&#10;&#10;&lt;h2&gt;Методика исследования&lt;/h2&gt;&#10;&lt;p&gt;Описание методики...&lt;/p&gt;&#10;&#10;&lt;h2&gt;Результаты&lt;/h2&gt;&#10;&lt;p&gt;Полученные результаты...&lt;/p&gt;" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit fade-up" style="animation-delay: 0.6s;">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Опубликовать статью</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function generateArticle() {
+        const topic = document.getElementById('ai-topic').value;
+        const category = document.getElementById('ai-category').value;
+
+        if (!topic) {
+            alert('Пожалуйста, введите тему статьи');
+            return;
+        }
+
+        const btn = document.getElementById('generate-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i><span>Генерация...</span>';
+
+        try {
+            const response = await fetch('/api/generate-article', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic, category })
+            });
+
+            const data = await response.json();
+
+            if (data.title) document.getElementById('title').value = data.title;
+            if (data.summary) document.getElementById('summary').value = data.summary;
+            if (data.content) document.getElementById('content').value = data.content;
+            if (data.keywords) document.getElementById('keywords').value = data.keywords.join(', ');
+
+            document.getElementById('category').value = category;
+
+        } catch (err) {
+            console.error('Ошибка генерации:', err);
+            alert('Ошибка при генерации статьи. Пожалуйста, попробуйте позже.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+
+    document.getElementById('generate-btn').addEventListener('click', generateArticle);
+
+    document.getElementById('article-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const authorsInput = document.getElementById('authors').value;
+        const authors = authorsInput.split(',').map(a => a.trim()).filter(a => a);
+
+        const keywordsInput = document.getElementById('keywords').value;
+        const keywords = keywordsInput.split(',').map(k => k.trim()).filter(k => k);
+
+        if (authors.length === 0) {
+            alert('Пожалуйста, укажите хотя бы одного автора');
+            return;
+        }
+
+        const articleData = {
+            title: document.getElementById('title').value.trim(),
+            authors: authors,
+            category: document.getElementById('category').value,
+            summary: document.getElementById('summary').value.trim(),
+            content: document.getElementById('content').value.trim(),
+            keywords: keywords
+        };
+
+        if (!articleData.title) {
+            alert('Пожалуйста, укажите название статьи');
+            return;
+        }
+
+        if (!articleData.summary) {
+            alert('Пожалуйста, укажите аннотацию');
+            return;
+        }
+
+        if (!articleData.content) {
+            alert('Пожалуйста, укажите содержание статьи');
+            return;
+        }
+
+        const btn = document.querySelector('.btn-submit');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i><span>Публикация...</span>';
+
+        try {
+            const response = await fetch('/api/create-article', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(articleData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Статья успешно опубликована!');
+                window.location.href = `/article/${result.article_id}`;
+            } else {
+                alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+            }
+        } catch (err) {
+            console.error('Ошибка:', err);
+            alert('Ошибка при публикации статьи. Пожалуйста, попробуйте позже.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1804 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель — OrenEco{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Full Width Hero Banner */
+        .admin-hero {
+            background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.03)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: cover;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .admin-hero::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #c8e6c9;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 500px;
+            line-height: 1.5;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            color: #c8e6c9;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .hero-icon i {
+            font-size: 2.5rem;
+            color: #a5d6a7;
+        }
+
+        /* Main Container */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f0;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border-color: #d4e4d0;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: #eef5ec;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .stat-icon i {
+            font-size: 1.5rem;
+            color: #2e7d32;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1a3b1e;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #6a7e6c;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h3 {
+            color: #1a3b1e;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header h3 i {
+            color: #2e7d32;
+            font-size: 1rem;
+        }
+
+        .section-count {
+            background: #eef5ec;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        .users-table, .projects-table, .contact-messages-table {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f0;
+        }
+        main {
+            background-color: #f5f7f5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f4f0;
+        }
+
+        th {
+            background: #fafdf9;
+            color: #1a3b1e;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        tr:hover td {
+            background: #fafdf9;
+        }
+
+        /* Role Badges */
+        .role-badge {
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .role-badge:hover {
+            transform: scale(1.02);
+        }
+
+        .role-admin {
+            background: #fef2f0;
+            color: #d32f2f;
+            border-left: 2px solid #d32f2f;
+        }
+
+        .role-expert {
+            background: #fff8e7;
+            color: #ed6c02;
+            border-left: 2px solid #ed6c02;
+        }
+
+        .role-user {
+            background: #eef5ec;
+            color: #2e7d32;
+            border-left: 2px solid #2e7d32;
+        }
+
+        select.role-badge {
+            background: white;
+            border: 1px solid #e0e8e0;
+            padding: 6px 12px;
+        }
+
+        .status-active {
+            color: #2e7d32;
+            font-weight: 600;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-inactive {
+            color: #d32f2f;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Buttons */
+        .btn-icon {
+            padding: 6px 14px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+
+        .btn-icon i {
+            font-size: 0.7rem;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-add {
+            background: #2e7d32;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-add i {
+            font-size: 0.8rem;
+        }
+
+        .btn-add:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+        }
+
+        /* Project Cards */
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .project-card {
+            background: #fafdf9;
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            border: 1px solid #eef2f0;
+            transition: all 0.2s ease;
+        }
+
+        .project-card:hover {
+            transform: translateX(4px);
+            background: white;
+            border-color: #c8dec6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .project-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1a3b1e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .project-title i {
+            color: #2e7d32;
+            font-size: 0.9rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 1.25rem;
+            font-size: 0.75rem;
+            color: #6a7e6c;
+            flex-wrap: wrap;
+        }
+
+        .project-meta i {
+            margin-right: 4px;
+            font-size: 0.7rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #eef2f0;
+            background: #fafdf9;
+            border-radius: 28px 28px 0 0;
+        }
+
+        .modal-header h2 {
+            color: #1a3b1e;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h2 i {
+            color: #2e7d32;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: 400;
+            cursor: pointer;
+            color: #9aae9c;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #d32f2f;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e2a;
+            font-size: 0.8rem;
+        }
+
+        .form-group label i {
+            margin-right: 6px;
+            color: #2e7d32;
+            width: 18px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e0e8e0;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.08);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn-submit {
+            background: #2e7d32;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+            font-family: inherit;
+        }
+
+        .btn-submit i {
+            font-size: 0.85rem;
+        }
+
+        .btn-submit:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #9aae9c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #9aae9c;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #c8dec6;
+        }
+
+        @media (max-width: 768px) {
+            .admin-hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-content p {
+                max-width: 100%;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-icon {
+                display: none;
+            }
+
+            .admin-container {
+                padding: 0 1rem 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+            }
+
+            .modal-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .modal-body {
+                padding: 1.25rem;
+            }
+
+            .project-meta {
+                gap: 0.75rem;
+            }
+        }
+        /* Main Container */
+.admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem;
+    background: transparent;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-header h3 {
+    color: #1a3b1e;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-header h3 i {
+    color: #2e7d32;
+    font-size: 1rem;
+}
+
+.section-count {
+    background: #eef5ec;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+/* Reset any conflicting styles */
+.users-table, .projects-table, .contact-messages-table {
+    background: white !important;
+    border-radius: 24px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 2rem !important;
+    overflow-x: auto !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid #eef2f0 !important;
+    display: block !important;
+}
+
+/* Projects List - CRITICAL FIX */
+.projects-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    min-height: 200px !important;
+}
+
+.project-card {
+    background: #fafdf9 !important;
+    border-radius: 16px !important;
+    padding: 1rem 1.25rem !important;
+    cursor: pointer !important;
+    border: 1px solid #eef2f0 !important;
+    transition: all 0.2s ease !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.project-card:hover {
+    transform: translateX(4px) !important;
+    background: white !important;
+    border-color: #c8dec6 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.project-title {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #1a3b1e !important;
+    margin-bottom: 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.project-title i {
+    color: #2e7d32 !important;
+    font-size: 0.9rem !important;
+}
+
+.project-meta {
+    display: flex !important;
+    gap: 1.25rem !important;
+    font-size: 0.75rem !important;
+    color: #6a7e6c !important;
+    flex-wrap: wrap !important;
+}
+
+.project-meta i {
+    margin-right: 4px !important;
+    font-size: 0.7rem !important;
+}
+
+/* Fix for main background */
+body main {
+    background-color: #f5f7f5;
+    min-height: 100vh;
+}
+
+/* Modal fixes */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: white;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #eef2f0;
+    background: #fafdf9;
+    border-radius: 28px 28px 0 0;
+}
+
+.modal-header h2 {
+    color: #1a3b1e;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h2 i {
+    color: #2e7d32;
+}
+
+.close {
+    font-size: 28px;
+    font-weight: 400;
+    cursor: pointer;
+    color: #9aae9c;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #d32f2f;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e2a;
+    font-size: 0.8rem;
+}
+
+.form-group label i {
+    margin-right: 6px;
+    color: #2e7d32;
+    width: 18px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e0e8e0;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.08);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.btn-submit {
+    background: #2e7d32;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+    font-family: inherit;
+}
+
+.btn-submit i {
+    font-size: 0.85rem;
+}
+
+.btn-submit:hover {
+    background: #1b5e20;
+    transform: translateY(-1px);
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #9aae9c;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #9aae9c;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #c8dec6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-hero {
+        padding: 2rem 1rem;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-content p {
+        max-width: 100%;
+    }
+
+    .hero-stats {
+        justify-content: center;
+    }
+
+    .hero-icon {
+        display: none;
+    }
+
+    .admin-container {
+        padding: 0 1rem 2rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        margin: 20px;
+    }
+
+    .modal-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .modal-body {
+        padding: 1.25rem;
+    }
+
+    .project-meta {
+        gap: 0.75rem;
+    }
+
+    .users-table,
+    .projects-table,
+    .contact-messages-table {
+        overflow-x: auto;
+    }
+}
+
+.admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(46, 125, 50, 0.18);
+    background: white;
+    color: #34513a;
+    border-radius: 16px;
+    padding: 0.85rem 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-tab:hover,
+.admin-tab.active {
+    background: linear-gradient(135deg, #2e7d32, #66bb6a);
+    color: white;
+    box-shadow: 0 10px 24px rgba(46, 125, 50, 0.22);
+}
+
+.admin-section {
+    display: none;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+.section-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.admin-search {
+    width: min(320px, 100%);
+    border: 1px solid #d8e8d6;
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    font: inherit;
+    color: #1f3323;
+    background: #f8fbf7;
+    outline: none;
+}
+
+.admin-search:focus {
+    border-color: #66bb6a;
+    box-shadow: 0 0 0 4px rgba(102, 187, 106, 0.14);
+}
+
+.scroll-panel {
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-right: 0.35rem;
+}
+
+.scroll-panel::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.scroll-panel::-webkit-scrollbar-track {
+    background: #eef5ec;
+    border-radius: 999px;
+}
+
+.scroll-panel::-webkit-scrollbar-thumb {
+    background: #a9cda7;
+    border-radius: 999px;
+}
+
+.messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.message-card {
+    border: 1px solid #e0ecd9;
+    border-radius: 18px;
+    padding: 1rem;
+    background: #fbfdf9;
+}
+
+.message-card-header,
+.message-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.message-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.message-author strong {
+    color: #1f3323;
+}
+
+.message-author a,
+.message-date {
+    color: #607d5f;
+    font-size: 0.92rem;
+}
+
+.message-body {
+    margin: 0.9rem 0;
+    color: #2f3d31;
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+.message-status {
+    border-radius: 999px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.message-status.new {
+    background: #fff3cd;
+    color: #8a5a00;
+}
+
+.message-status.read {
+    background: #e8f4ff;
+    color: #1769aa;
+}
+
+.message-status.closed {
+    background: #eef5ec;
+    color: #2e7d32;
+}
+
+.message-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+    </style>
+
+    <!-- Full Width Hero Banner -->
+    <div class="admin-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Панель администратора</span>
+                </div>
+                <h1>Управление платформой</h1>
+                <p>Контролируйте пользователей, управляйте проектами и отслеживайте активность на платформе</p>
+                <div class="hero-stats" id="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="hero-users">0</span>
+                        <span class="hero-stat-label">пользователей</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="hero-projects">0</span>
+                        <span class="hero-stat-label">проектов</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="hero-expertises">0</span>
+                        <span class="hero-stat-label">экспертиз</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="admin-container">
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="loading">Загрузка статистики...</div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" type="button" data-admin-tab="users">
+                <i class="fas fa-users"></i>
+                <span>Пользователи</span>
+            </button>
+            <button class="admin-tab" type="button" data-admin-tab="projects">
+                <i class="fas fa-industry"></i>
+                <span>Проекты</span>
+            </button>
+            <button class="admin-tab" type="button" data-admin-tab="messages">
+                <i class="fas fa-inbox"></i>
+                <span>Обращения</span>
+            </button>
+        </div>
+
+        <!-- Users Section -->
+        <div class="users-table admin-section active" id="admin-section-users">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-users"></i>
+                    <span>Управление пользователями</span>
+                </h3>
+                <div class="section-tools">
+                    <input class="admin-search" id="users-search" type="search" placeholder="Поиск пользователей">
+                    <span class="section-count" id="users-count">0</span>
+                </div>
+            </div>
+            <div class="scroll-panel">
+                <table id="users-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Email</th>
+                        <th>Роль</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="6" class="loading">Загрузка пользователей...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="projects-table admin-section" id="admin-section-projects">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-industry"></i>
+                    <span>Управление проектами</span>
+                </h3>
+                <div class="section-tools">
+                    <input class="admin-search" id="projects-search" type="search" placeholder="Поиск проектов">
+                    <button class="btn-add" id="add-project-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Добавить проект</span>
+                    </button>
+                </div>
+            </div>
+            <div class="scroll-panel">
+                <div id="projects-list" class="projects-list">
+                    <div class="loading">Загрузка проектов...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Messages Section -->
+        <div class="contact-messages-table admin-section" id="admin-section-messages">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-inbox"></i>
+                    <span>Обращения</span>
+                </h3>
+                <div class="section-tools">
+                    <input class="admin-search" id="messages-search" type="search" placeholder="Поиск обращений">
+                    <span class="section-count" id="messages-count">0</span>
+                </div>
+            </div>
+            <div id="messages-list" class="messages-list scroll-panel">
+                <div class="loading">Загрузка обращений...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">
+                    <i class="fas fa-folder-plus"></i>
+                    <span>Добавить проект</span>
+                </h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="project-form">
+                    <input type="hidden" id="project-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-heading"></i>Название проекта *</label>
+                            <input type="text" id="project-title" required placeholder="Введите название проекта">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i>Тип проекта *</label>
+                            <select id="project-type" required>
+                                <option value="Промышленный">Промышленный</option>
+                                <option value="Сельскохозяйственный">Сельскохозяйственный</option>
+                                <option value="Инфраструктурный">Инфраструктурный</option>
+                                <option value="Энергетический">Энергетический</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i>Инициатор</label>
+                            <input type="text" id="project-initiator" placeholder="Название компании или организации">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-ruble-sign"></i>Инвестиции (млн руб)</label>
+                            <input type="number" id="project-investment" step="0.1" placeholder="0.0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i>Регион *</label>
+                            <input type="text" id="project-region" required placeholder="Область, край, республика">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-location-dot"></i>Район/округ</label>
+                            <input type="text" id="project-district" placeholder="Муниципальный район">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-expand"></i>Общая площадь (га)</label>
+                            <input type="number" id="project-total-area" step="0.1" placeholder="0.0">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-draw-polygon"></i>Нарушаемая площадь (га)</label>
+                            <input type="number" id="project-disturbed-area" step="0.1" placeholder="0.0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-water"></i>Расстояние до воды (км)</label>
+                            <input type="number" id="project-distance-water" step="0.1" placeholder="0.0">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-droplet"></i>Водный объект</label>
+                            <input type="text" id="project-water-body" placeholder="Река, озеро, водохранилище">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-arrow-down"></i>Глубина грунтовых вод (м)</label>
+                            <input type="number" id="project-groundwater" step="0.1" placeholder="0.0">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-mountain"></i>Тип ландшафта</label>
+                            <input type="text" id="project-landscape" placeholder="Равнинный, холмистый, горный">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-paw"></i>Краснокнижные виды</label>
+                        <textarea id="project-red-book" rows="2"
+                                  placeholder="Перечислите виды растений и животных, занесённых в Красную книгу"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-leaf"></i>Компенсационные мероприятия</label>
+                        <textarea id="project-compensation" rows="3"
+                                  placeholder="Меры по восстановлению окружающей среды"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-microchip"></i>Тип технологии</label>
+                            <input type="text" id="project-technology" placeholder="Технологическое решение">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-trash-alt"></i>Объем отходов (тыс. т/год)</label>
+                            <input type="number" id="project-waste" step="0.1" placeholder="0.0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-chart-line"></i>Сложность проекта (0-10)</label>
+                        <input type="number" id="project-points" min="0" max="10" step="1" value="5">
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i>
+                        <span>Сохранить проект</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStats = {};
+        let allUsers = [];
+        let allProjects = [];
+        let allMessages = [];
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const stats = await res.json();
+                currentStats = stats;
+
+                // Update hero stats
+                document.getElementById('hero-users').textContent = stats.total_users || 0;
+                document.getElementById('hero-projects').textContent = stats.total_projects || 0;
+                document.getElementById('hero-expertises').textContent = stats.total_expertises || 0;
+
+                // Update stats cards
+                document.getElementById('stats-grid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">${stats.total_users || 0}</div>
+                    <div class="stat-label">Всего пользователей</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="stat-value">${stats.total_projects || 0}</div>
+                    <div class="stat-label">Активных проектов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-value">${stats.total_expertises || 0}</div>
+                    <div class="stat-label">Проведено экспертиз</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <div class="stat-value">${stats.total_messages || 0}</div>
+                    <div class="stat-label">Обращений</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-value">${stats.avg_score || 0}</div>
+                    <div class="stat-label">Средняя оценка</div>
+                </div>
+            `;
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const users = await res.json();
+                allUsers = users;
+                renderUsers();
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+            }
+        }
+
+        function renderUsers() {
+            const search = document.getElementById('users-search')?.value.toLowerCase().trim() || '';
+            const filteredUsers = allUsers.filter(u => [
+                u.id,
+                u.full_name,
+                u.username,
+                u.email,
+                u.role,
+                u.is_active ? 'активен' : 'заблокирован'
+            ].join(' ').toLowerCase().includes(search));
+
+            document.getElementById('users-count').textContent = `${filteredUsers.length}/${allUsers.length}`;
+
+            const tbody = document.querySelector('#users-table tbody');
+
+            if (filteredUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="loading">Пользователи не найдены</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredUsers.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td><strong>${escapeHtml(u.full_name || u.username)}</strong></td>
+                    <td>${escapeHtml(u.email)}</td>
+                    <td>
+                        <select onchange="changeRole(${u.id}, this.value)" class="role-badge role-${u.role}" style="border: none; cursor: pointer;">
+                            <option value="user" ${u.role === 'user' ? 'selected' : ''}>Пользователь</option>
+                            <option value="expert" ${u.role === 'expert' ? 'selected' : ''}>Эксперт</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Администратор</option>
+                        </select>
+                    </td>
+                    <td class="${u.is_active ? 'status-active' : 'status-inactive'}">
+                        <i class="fas ${u.is_active ? 'fa-check-circle' : 'fa-ban'}"></i>
+                        ${u.is_active ? 'Активен' : 'Заблокирован'}
+                    </td>
+                    <td>
+                        <button onclick="toggleUser(${u.id})" class="btn-icon" style="background: ${u.is_active ? '#fff8e7' : '#eef5ec'}; color: ${u.is_active ? '#ed6c02' : '#2e7d32'};">
+                            <i class="fas ${u.is_active ? 'fa-lock' : 'fa-unlock-alt'}"></i>
+                            <span>${u.is_active ? 'Заблокировать' : 'Разблокировать'}</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/admin/projects');
+                const projects = await res.json();
+                allProjects = projects;
+                renderProjects();
+
+            } catch (error) {
+                console.error('Ошибка загрузки проектов:', error);
+                document.getElementById('projects-list').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Ошибка загрузки проектов</p></div>';
+            }
+        }
+
+        function renderProjects() {
+            const search = document.getElementById('projects-search')?.value.toLowerCase().trim() || '';
+            const filteredProjects = allProjects.filter(p => [
+                p.id,
+                p.title,
+                p.type,
+                p.region,
+                p.district,
+                p.initiator,
+                p.is_active ? 'активен' : 'неактивен'
+            ].join(' ').toLowerCase().includes(search));
+
+            const container = document.getElementById('projects-list');
+
+            if (filteredProjects.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Проекты не найдены</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredProjects.map(p => `
+                <div class="project-card" onclick="editProject(${p.id})">
+                    <div class="project-title">
+                        <i class="fas fa-file-alt"></i>
+                        <span>${escapeHtml(p.title)}</span>
+                    </div>
+                    <div class="project-meta">
+                        <span><i class="fas fa-tag"></i>${escapeHtml(p.type)}</span>
+                        <span><i class="fas fa-map-marker-alt"></i>${escapeHtml(p.region) || 'Регион не указан'}</span>
+                        <span><i class="fas fa-chart-line"></i>Сложность: ${p.points || 0}/10</span>
+                        <span><i class="fas ${p.is_active ? 'fa-check-circle' : 'fa-ban'}" style="color: ${p.is_active ? '#2e7d32' : '#d32f2f'}"></i> ${p.is_active ? 'Активен' : 'Неактивен'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadMessages() {
+            try {
+                const res = await fetch('/api/admin/contact-messages');
+                const messages = await res.json();
+                allMessages = messages;
+                renderMessages();
+            } catch (error) {
+                console.error('Ошибка загрузки обращений:', error);
+                document.getElementById('messages-list').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Ошибка загрузки обращений</p></div>';
+            }
+        }
+
+        function renderMessages() {
+            const search = document.getElementById('messages-search')?.value.toLowerCase().trim() || '';
+            const filteredMessages = allMessages.filter(message => [
+                message.id,
+                message.name,
+                message.email,
+                message.message,
+                getMessageStatusLabel(message.status),
+                message.created_at
+            ].join(' ').toLowerCase().includes(search));
+
+            document.getElementById('messages-count').textContent = `${filteredMessages.length}/${allMessages.length}`;
+            const container = document.getElementById('messages-list');
+
+            if (filteredMessages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Обращения не найдены</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredMessages.map(message => `
+                <div class="message-card">
+                    <div class="message-card-header">
+                        <div class="message-author">
+                            <strong>${escapeHtml(message.name)}</strong>
+                            <a href="mailto:${escapeHtml(message.email)}">${escapeHtml(message.email)}</a>
+                        </div>
+                        <span class="message-status ${message.status || 'new'}">${getMessageStatusLabel(message.status)}</span>
+                    </div>
+                    <div class="message-body">${escapeHtml(message.message)}</div>
+                    <div class="message-card-footer">
+                        <span class="message-date">
+                            <i class="fas fa-clock"></i>
+                            ${formatDate(message.created_at)}
+                        </span>
+                        <div class="message-actions">
+                            <button class="btn-icon" onclick="changeMessageStatus(${message.id}, 'read')">
+                                <i class="fas fa-eye"></i>
+                                <span>Прочитано</span>
+                            </button>
+                            <button class="btn-icon" onclick="changeMessageStatus(${message.id}, 'closed')">
+                                <i class="fas fa-check"></i>
+                                <span>Закрыть</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getMessageStatusLabel(status) {
+            const labels = {
+                new: 'Новое',
+                read: 'Прочитано',
+                closed: 'Закрыто'
+            };
+            return labels[status] || labels.new;
+        }
+
+        function formatDate(value) {
+            if (!value) return 'Дата не указана';
+            const date = new Date(value.replace(' ', 'T'));
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleString('ru-RU');
+        }
+
+        async function changeMessageStatus(messageId, status) {
+            try {
+                const res = await fetch(`/api/admin/contact-messages/${messageId}/status`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status})
+                });
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Ошибка изменения статуса');
+                }
+
+                await loadMessages();
+                await loadStats();
+            } catch (error) {
+                alert(error.message || 'Ошибка при изменении статуса обращения');
+            }
+        }
+
+        async function changeRole(userId, newRole) {
+            try {
+                await fetch(`/api/admin/users/${userId}/role`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({role: newRole})
+                });
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                alert('Ошибка при изменении роли');
+            }
+        }
+
+        async function toggleUser(userId) {
+            try {
+                await fetch(`/api/admin/users/${userId}/toggle`, {method: 'PUT'});
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                alert('Ошибка при изменении статуса');
+            }
+        }
+
+        function openModal() {
+            document.getElementById('project-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('project-modal').style.display = 'none';
+            document.getElementById('project-form').reset();
+            document.getElementById('project-id').value = '';
+            document.getElementById('project-points').value = 5;
+            document.body.style.overflow = 'auto';
+        }
+
+        async function editProject(id) {
+            try {
+                const res = await fetch(`/api/admin/projects/${id}`);
+                const p = await res.json();
+
+                document.getElementById('modal-title').innerHTML = '<i class="fas fa-edit"></i><span>Редактировать проект</span>';
+                document.getElementById('project-id').value = p.id;
+                document.getElementById('project-title').value = p.title || '';
+                document.getElementById('project-type').value = p.type || 'Промышленный';
+                document.getElementById('project-initiator').value = p.initiator || '';
+                document.getElementById('project-investment').value = p.investment_amount || '';
+                document.getElementById('project-region').value = p.region || '';
+                document.getElementById('project-district').value = p.district || '';
+                document.getElementById('project-total-area').value = p.total_area || '';
+                document.getElementById('project-disturbed-area').value = p.disturbed_area || '';
+                document.getElementById('project-distance-water').value = p.distance_to_water || '';
+                document.getElementById('project-water-body').value = p.water_body_name || '';
+                document.getElementById('project-groundwater').value = p.groundwater_depth || '';
+                document.getElementById('project-landscape').value = p.landscape_type || '';
+                document.getElementById('project-red-book').value = p.red_book_species || '';
+                document.getElementById('project-compensation').value = p.compensation_measures || '';
+                document.getElementById('project-technology').value = p.technology_type || '';
+                document.getElementById('project-waste').value = p.waste_volume || '';
+                document.getElementById('project-points').value = p.points || 5;
+
+                openModal();
+            } catch (error) {
+                console.error('Ошибка загрузки проекта:', error);
+                alert('Ошибка загрузки проекта');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('project-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const projectData = {
+                title: document.getElementById('project-title').value,
+                type: document.getElementById('project-type').value,
+                initiator: document.getElementById('project-initiator').value,
+                investment_amount: parseFloat(document.getElementById('project-investment').value) || null,
+                region: document.getElementById('project-region').value,
+                district: document.getElementById('project-district').value,
+                total_area: parseFloat(document.getElementById('project-total-area').value) || null,
+                disturbed_area: parseFloat(document.getElementById('project-disturbed-area').value) || null,
+                distance_to_water: parseFloat(document.getElementById('project-distance-water').value) || null,
+                water_body_name: document.getElementById('project-water-body').value,
+                groundwater_depth: parseFloat(document.getElementById('project-groundwater').value) || null,
+                landscape_type: document.getElementById('project-landscape').value,
+                red_book_species: document.getElementById('project-red-book').value,
+                compensation_measures: document.getElementById('project-compensation').value,
+                technology_type: document.getElementById('project-technology').value,
+                waste_volume: parseFloat(document.getElementById('project-waste').value) || null,
+                points: parseInt(document.getElementById('project-points').value) || 5
+            };
+
+            const projectId = document.getElementById('project-id').value;
+            const url = projectId ? `/api/admin/projects/${projectId}` : '/api/admin/projects';
+            const method = projectId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(projectData)
+                });
+
+                if (res.ok) {
+                    alert(projectId ? 'Проект обновлён!' : 'Проект создан!');
+                    closeModal();
+                    loadProjects();
+                    loadStats();
+                } else {
+                    const error = await res.json();
+                    alert('Ошибка: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при сохранении проекта');
+            }
+        });
+
+        document.getElementById('add-project-btn').addEventListener('click', () => {
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-folder-plus"></i><span>Добавить новый проект</span>';
+            document.getElementById('project-form').reset();
+            document.getElementById('project-id').value = '';
+            document.getElementById('project-points').value = 5;
+            openModal();
+        });
+
+        document.querySelectorAll('.admin-tab').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.adminTab;
+
+                document.querySelectorAll('.admin-tab').forEach(item => {
+                    item.classList.toggle('active', item === button);
+                });
+
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.classList.toggle('active', section.id === `admin-section-${tab}`);
+                });
+            });
+        });
+
+        document.getElementById('users-search').addEventListener('input', renderUsers);
+        document.getElementById('projects-search').addEventListener('input', renderProjects);
+        document.getElementById('messages-search').addEventListener('input', renderMessages);
+
+        window.onclick = function (event) {
+            if (event.target === document.getElementById('project-modal')) {
+                closeModal();
+            }
+        }
+
+        loadStats();
+        loadUsers();
+        loadProjects();
+        loadMessages();
+    </script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Контакты — OrenEco{% endblock %}
+
+{% block content %}
+    <div class="contacts-page">
+        <!-- Hero Block -->
+        <section class="contacts-hero">
+            <div class="contacts-hero-content">
+                <h1 class="fade-up">Свяжитесь с нами</h1>
+                <p class="fade-up delay-1">Есть вопросы или предложения? Мы всегда рады обратной связи.</p>
+            </div>
+        </section>
+
+        <!-- Контактная информация -->
+        <section class="contacts-info">
+            <div class="container">
+                <h2 class="section-title fade-up">Контактная информация</h2>
+                <div class="info-cards">
+                    <div class="info-card fade-up delay-1">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email</h3>
+                        <p>info@orenieco.ru</p>
+                    </div>
+                    <div class="info-card fade-up delay-2">
+                        <i class="fas fa-phone"></i>
+                        <h3>Телефон</h3>
+                        <p>+7 (3532) 123-45-67</p>
+                    </div>
+                    <div class="info-card fade-up delay-3">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Адрес</h3>
+                        <p>г. Оренбург, ул. Набережная, 29Б</p>
+                    </div>
+                    <div class="info-card fade-up delay-4">
+                        <i class="fas fa-clock"></i>
+                        <h3>Режим работы</h3>
+                        <p>Пн–Пт, 9:00–18:00</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Форма обратной связи -->
+<!-- Форма обратной связи -->
+<section class="contacts-form">
+    <div class="container">
+        <h2 class="section-title fade-up">Напишите нам</h2>
+        <form id="contact-form" class="contact-form fade-up delay-1">
+            <div class="form-group">
+                <label for="name" class="form-label">Ваше имя</label>
+                <input type="text" id="name" name="name" placeholder="Иван Иванов" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" placeholder="example@mail.ru" required>
+            </div>
+            <div class="form-group">
+                <label for="message" class="form-label">Ваше сообщение</label>
+                <textarea id="message" name="message" placeholder="Опишите ваш вопрос..." rows="5" required></textarea>
+            </div>
+            <button type="submit" id="submit-btn" class="submit-btn">Отправить сообщение</button>
+        </form>
+    </div>
+</section>
+
+        <!-- Карта -->
+        <section class="contacts-map">
+    <div class="container">
+        <h2 class="section-title fade-up">Наше местоположение</h2>
+    </div>
+    <iframe
+        class="map-iframe"
+        src="https://yandex.ru/map-widget/v1/?ll=55.108490,51.755523&z=18&pt=55.108490,51.755523,pm2orgm&what=here-maps&map-type=map&text=Отдел%20геоэкологии%20ОНЦ%20УрО%20РАН"
+        frameborder="0"
+        allowfullscreen
+    ></iframe>
+</section>
+    </div>
+
+    <script>
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function showNotification(message, isError = false) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) existingNotification.remove();
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${isError ? 'error' : 'success'}`;
+            notification.innerHTML = `<div class="notification-content">${message}</div>`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Отправка...';
+
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    message: document.getElementById('message').value
+                };
+
+                if (!formData.name || !formData.email || !formData.message) {
+                    showNotification('Пожалуйста, заполните все поля', true);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить сообщение';
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    showNotification('Пожалуйста, введите корректный email', true);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить сообщение';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        showNotification('Спасибо за сообщение! Мы свяжемся с вами в ближайшее время.');
+                        contactForm.reset();
+                    } else {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Ошибка отправки');
+                    }
+                } catch (error) {
+                    console.error('Ошибка отправки обращения:', error);
+                    showNotification(error.message || 'Не удалось отправить сообщение. Попробуйте позже.', true);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить сообщение';
+                }
+            });
+        }
+    </script>
+{% endblock %}

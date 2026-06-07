@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Графики — OrenEco{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .charts-page {
+        min-height: calc(100vh - 300px);
+        background: #f7f9f7;
+    }
+
+    .charts-hero {
+        background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+        color: white;
+        padding: 5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .charts-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.04)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L0,320Z"></path></svg>');
+        background-repeat: no-repeat;
+        background-position: bottom;
+        background-size: cover;
+        opacity: 0.25;
+    }
+
+    .charts-hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .charts-hero-content {
+        max-width: 640px;
+    }
+
+    .charts-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #c8e6c9;
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .charts-hero h1 {
+        font-size: clamp(2.2rem, 5vw, 3.2rem);
+        line-height: 1.15;
+        margin-bottom: 1rem;
+        font-weight: 800;
+    }
+
+    .charts-hero p {
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .charts-hero-icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .charts-hero-icon i {
+        font-size: 2.8rem;
+        color: #a5d6a7;
+    }
+
+    .charts-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem 4rem;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card,
+    .chart-card,
+    .builder-card {
+        background: white;
+        border: 1px solid #e8ede6;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-card {
+        border-radius: 18px;
+        padding: 1.4rem;
+        transition: all 0.2s ease;
+    }
+
+    .summary-card:hover,
+    .chart-card:hover,
+    .builder-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.08);
+        border-color: #c8dec6;
+    }
+
+    .summary-card i {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #eef5ec;
+        color: #2e7d32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.15rem;
+    }
+
+    .summary-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1a472a;
+        line-height: 1;
+        margin-bottom: 0.45rem;
+    }
+
+    .summary-label {
+        color: #5a7a5c;
+        font-size: 0.9rem;
+    }
+
+    .builder-card {
+        border-radius: 22px;
+        padding: 1.6rem;
+        margin-bottom: 2rem;
+    }
+
+    .builder-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.4rem;
+        flex-wrap: wrap;
+    }
+
+    .builder-head h2,
+    .charts-section-title {
+        color: #1a472a;
+        font-size: 1.45rem;
+        font-weight: 800;
+    }
+
+    .builder-head p {
+        color: #5a7a5c;
+        max-width: 620px;
+        font-size: 0.95rem;
+    }
+
+    .builder-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+        display: block;
+        color: #2e7d32;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .control-group select {
+        width: 100%;
+        border: 1px solid #dfe8dc;
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #fbfefb;
+        color: #1a3b1e;
+        font: inherit;
+        outline: none;
+    }
+
+    .control-group select:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+    }
+
+    .builder-chart {
+        height: 360px;
+        position: relative;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.2rem;
+    }
+
+    .chart-card {
+        border-radius: 22px;
+        padding: 1.4rem;
+        transition: all 0.2s ease;
+    }
+
+    .chart-card h3 {
+        color: #1a472a;
+        font-size: 1.1rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .chart-card p {
+        color: #6a806b;
+        font-size: 0.88rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .chart-box {
+        height: 300px;
+        position: relative;
+    }
+
+    .charts-loading,
+    .charts-error {
+        text-align: center;
+        padding: 2rem;
+        color: #5a7a5c;
+    }
+
+    .charts-error {
+        color: #c62828;
+    }
+
+    @media (max-width: 768px) {
+        .charts-hero {
+            padding: 4rem 1.2rem;
+        }
+
+        .charts-container {
+            padding: 2rem 1rem 3rem;
+        }
+
+        .builder-chart,
+        .chart-box {
+            height: 280px;
+        }
+    }
+</style>
+
+<section class="charts-page">
+    <div class="charts-hero">
+        <div class="charts-hero-inner">
+            <div class="charts-hero-content">
+                <div class="charts-badge">
+                    <i class="fas fa-chart-line"></i>
+                    Аналитика OrenEco
+                </div>
+                <h1>Графики экологических данных</h1>
+                <p>Раздел позволяет визуально анализировать загрязнение, структуру проектов, решения по экспертизе и материалы сайта на основе данных из базы.</p>
+            </div>
+            <div class="charts-hero-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div id="charts-status" class="charts-loading">Загрузка данных...</div>
+
+        <div id="charts-content" style="display: none;">
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <i class="fas fa-location-dot"></i>
+                    <div class="summary-value" id="total-points">0</div>
+                    <div class="summary-label">точек загрязнения</div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-smog"></i>
+                    <div class="summary-value" id="avg-pollution">0</div>
+                    <div class="summary-label">средний индекс AQI</div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-folder-tree"></i>
+                    <div class="summary-value" id="total-projects">0</div>
+                    <div class="summary-label">экологических проектов</div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-star-half-stroke"></i>
+                    <div class="summary-value" id="avg-score">0</div>
+                    <div class="summary-label">средняя оценка экспертизы</div>
+                </div>
+            </div>
+
+            <div class="builder-card">
+                <div class="builder-head">
+                    <div>
+                        <h2>Конструктор графика</h2>
+                        <p>Выберите набор данных и тип диаграммы, чтобы быстро сравнить показатели системы.</p>
+                    </div>
+                </div>
+                <div class="builder-controls">
+                    <div class="control-group">
+                        <label for="dataset-select">Данные</label>
+                        <select id="dataset-select">
+                            <option value="pollution_levels">Категории AQI</option>
+                            <option value="project_types">Типы проектов</option>
+                            <option value="project_decisions">Решения по проектам</option>
+                            <option value="article_categories">Категории статей</option>
+                            <option value="expertise_scores">Оценки экспертизы</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="chart-type-select">Тип графика</label>
+                        <select id="chart-type-select">
+                            <option value="bar">Столбчатый</option>
+                            <option value="line">Линейный</option>
+                            <option value="doughnut">Кольцевой</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="builder-chart">
+                    <canvas id="custom-chart"></canvas>
+                </div>
+            </div>
+
+            <h2 class="charts-section-title">Готовые диаграммы</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Уровни загрязнения</h3>
+                    <p>Распределение активных точек карты по степени загрязнения.</p>
+                    <div class="chart-box">
+                        <canvas id="pollution-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Типы проектов</h3>
+                    <p>Количество экологических проектов по основным направлениям.</p>
+                    <div class="chart-box">
+                        <canvas id="projects-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Решения по проектам</h3>
+                    <p>Соотношение согласованных, отклоненных и отправленных на доработку проектов.</p>
+                    <div class="chart-box">
+                        <canvas id="decisions-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const palette = ['#2e7d32', '#81c784', '#ff9800', '#d32f2f', '#1976d2', '#7b1fa2', '#455a64'];
+    const datasetTitles = {
+        pollution_levels: 'Категории AQI',
+        project_types: 'Типы проектов',
+        project_decisions: 'Решения по проектам',
+        article_categories: 'Категории статей',
+        expertise_scores: 'Оценки экспертизы'
+    };
+
+    let chartData = null;
+    let customChart = null;
+
+    function chartOptions(title) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 16,
+                        font: { family: "'Segoe UI', sans-serif" }
+                    }
+                },
+                title: {
+                    display: false,
+                    text: title
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        };
+    }
+
+    function doughnutOptions() {
+        const options = chartOptions('');
+        delete options.scales;
+        return options;
+    }
+
+    function createChart(canvasId, type, datasetKey) {
+        const source = chartData.datasets[datasetKey];
+        const isRound = type === 'doughnut' || type === 'pie';
+        const ctx = document.getElementById(canvasId);
+
+        return new Chart(ctx, {
+            type,
+            data: {
+                labels: source.labels,
+                datasets: [{
+                    label: datasetTitles[datasetKey],
+                    data: source.values,
+                    backgroundColor: isRound ? palette : palette[0],
+                    borderColor: isRound ? '#ffffff' : palette[0],
+                    borderWidth: isRound ? 2 : 1,
+                    tension: 0.35,
+                    fill: type === 'line',
+                    pointBackgroundColor: palette[0]
+                }]
+            },
+            options: isRound ? doughnutOptions() : chartOptions(datasetTitles[datasetKey])
+        });
+    }
+
+    function updateCustomChart() {
+        const datasetKey = document.getElementById('dataset-select').value;
+        const chartType = document.getElementById('chart-type-select').value;
+
+        if (customChart) {
+            customChart.destroy();
+        }
+
+        customChart = createChart('custom-chart', chartType, datasetKey);
+    }
+
+    function fillSummary(summary) {
+        document.getElementById('total-points').textContent = summary.total_points;
+        document.getElementById('avg-pollution').textContent = summary.avg_pollution;
+        document.getElementById('total-projects').textContent = summary.total_projects;
+        document.getElementById('avg-score').textContent = summary.avg_score;
+    }
+
+    async function initCharts() {
+        const status = document.getElementById('charts-status');
+        const content = document.getElementById('charts-content');
+
+        try {
+            const response = await fetch('/api/charts-data');
+            if (!response.ok) {
+                throw new Error('Не удалось получить данные');
+            }
+
+            chartData = await response.json();
+            fillSummary(chartData.summary);
+
+            content.style.display = 'block';
+            status.style.display = 'none';
+
+            updateCustomChart();
+            createChart('pollution-chart', 'doughnut', 'pollution_levels');
+            createChart('projects-chart', 'bar', 'project_types');
+            createChart('decisions-chart', 'doughnut', 'project_decisions');
+        } catch (error) {
+            status.className = 'charts-error';
+            status.textContent = 'Ошибка загрузки данных для графиков';
+            console.error(error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('dataset-select').addEventListener('change', updateCustomChart);
+        document.getElementById('chart-type-select').addEventListener('change', updateCustomChart);
+        initCharts();
+    });
+</script>
+{% endblock %}

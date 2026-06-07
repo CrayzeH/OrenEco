@@ -1,0 +1,813 @@
+{% extends "base.html" %}
+
+{% block title %}Экологическая экспертиза — OrenEco{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ========== АНИМАЦИИ ПОЯВЛЕНИЯ (как на странице контактов) ========== */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.15s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.45s;
+    }
+
+    .delay-4 {
+        animation-delay: 0.6s;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .expertise-wrap {
+        max-width: 1300px;
+        margin: 110px auto 60px;
+        padding: 0 24px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* header */
+    .ex-header {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+    .ex-header h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1f5e23, #2b7a2f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+    }
+    .ex-header p {
+        color: #4a674b;
+        font-size: 1rem;
+        max-width: 560px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* фильтр + заголовок */
+    .selector-bar {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px 28px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02);
+        border: 1px solid #eef2e8;
+    }
+    .selector-bar h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1f5e23, #2e7d32);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    .selector-bar select {
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: 1px solid #dde4dc;
+        background: #fbfefb;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #1b3b1f;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .selector-bar select:hover {
+        border-color: #2e7d32;
+    }
+
+    /* сетка проектов */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 26px;
+        margin-bottom: 40px;
+    }
+
+    /* карточка проекта */
+    .project-tile {
+        background: white;
+        border-radius: 28px;
+        padding: 22px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        border: 1px solid #e9f0e5;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+    .project-tile:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 30px -12px rgba(46, 125, 50, 0.12);
+        border-color: #c0ddc0;
+    }
+    .project-tile.selected {
+        border: 2px solid #2e7d32;
+        background: #fafff7;
+    }
+    .project-tile.completed {
+        background: #f4fbf2;
+        border-left: 5px solid #2e7d32;
+    }
+
+    .tile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+    .type-badge {
+        background: #eef3ea;
+        padding: 5px 14px;
+        border-radius: 40px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #2c5a2a;
+        letter-spacing: 0.3px;
+    }
+    .best-badge {
+        background: #2e7d32;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 40px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .tile-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1c2e1a;
+        margin-bottom: 14px;
+        line-height: 1.4;
+    }
+
+    .stats-row {
+        display: flex;
+        gap: 18px;
+        font-size: 0.8rem;
+        color: #4f6b51;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+    .best-score {
+        color: #2e7d32;
+        font-weight: 700;
+        background: #eaf5e6;
+        padding: 2px 10px;
+        border-radius: 30px;
+    }
+
+    .tile-footer {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #eaf0e5;
+        padding-top: 14px;
+        font-size: 0.75rem;
+        color: #647a66;
+        font-weight: 500;
+    }
+
+    /* детали проекта */
+    .details-panel {
+        background: white;
+        border-radius: 32px;
+        margin-bottom: 32px;
+        border: 1px solid #eaf0e5;
+        overflow: hidden;
+        display: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+        animation: fadeSlide 0.35s ease;
+    }
+    .details-head {
+        background: linear-gradient(100deg, #1f5e23, #2e7d32);
+        padding: 28px 32px;
+        color: white;
+    }
+    .details-head h2 {
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        padding: 28px 32px;
+    }
+    .detail-card {
+        background: #fbfef9;
+        border-radius: 24px;
+        padding: 18px;
+    }
+    .detail-card h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f5e23;
+        margin-bottom: 16px;
+        border-bottom: 2px solid #ddecdd;
+        padding-bottom: 8px;
+    }
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eaf0e5;
+        font-size: 0.85rem;
+    }
+
+    /* форма экспертизы */
+    .expertise-form {
+        background: white;
+        border-radius: 32px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid #eaf0e5;
+        display: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    }
+    .expertise-form h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f5e23;
+        margin-bottom: 8px;
+    }
+
+    .decision-row {
+        display: flex;
+        gap: 20px;
+        margin: 24px 0;
+        background: #fbfef9;
+        padding: 18px 20px;
+        border-radius: 28px;
+        flex-wrap: wrap;
+    }
+    .decision-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        padding: 8px 24px;
+        border-radius: 60px;
+        border: 1px solid #dce8dc;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+    .decision-label:hover {
+        background: #eef5ea;
+        border-color: #2e7d32;
+    }
+    .decision-label input {
+        width: 18px;
+        height: 18px;
+        accent-color: #2e7d32;
+    }
+
+    .opinion-area {
+        width: 100%;
+        min-height: 260px;
+        padding: 18px;
+        border: 1px solid #dce8dc;
+        border-radius: 24px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        resize: vertical;
+        transition: 0.2s;
+    }
+    .opinion-area:focus {
+        outline: none;
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(110deg, #1f5e23, #2e7d32);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 14px;
+        width: 100%;
+        border: none;
+        border-radius: 60px;
+        margin-top: 28px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -10px #2e7d32;
+    }
+
+    /* результат */
+    .result-panel {
+        background: linear-gradient(120deg, #f0f7ed, #e7f1e4);
+        border-radius: 32px;
+        padding: 32px;
+        display: none;
+        border: 1px solid #cde0cd;
+        margin-bottom: 32px;
+    }
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .score-circle {
+        background: #2e7d32;
+        color: white;
+        padding: 6px 20px;
+        border-radius: 60px;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    .result-content {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        line-height: 1.6;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        margin-bottom: 24px;
+    }
+    .btn-secondary {
+        background: #4c6e4e;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 60px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-secondary:hover {
+        background: #2e5530;
+    }
+
+    /* Auth Block - Modern & Beautiful */
+    .auth-block-modern {
+        background: white;
+        border-radius: 32px;
+        padding: 0;
+        grid-column: 1/-1;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        border: 1px solid #eef2e8;
+    }
+
+    .auth-block-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 48px 40px;
+        background: linear-gradient(135deg, #fafdf8 0%, #ffffff 100%);
+    }
+
+    .auth-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+
+    .auth-icon-wrapper i {
+        font-size: 2.5rem;
+        color: #2e7d32;
+    }
+
+    .auth-block-modern h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a3b1e;
+        margin-bottom: 12px;
+    }
+
+    .auth-block-modern p {
+        color: #6a8a6c;
+        font-size: 0.95rem;
+        margin-bottom: 28px;
+        max-width: 380px;
+        line-height: 1.5;
+    }
+
+    .auth-buttons {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .auth-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 28px;
+        border-radius: 100px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .auth-btn-primary {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+    }
+
+    .auth-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.35);
+    }
+
+    .auth-btn-secondary {
+        background: white;
+        color: #2e7d32;
+        border: 1px solid #c8dec6;
+    }
+
+    .auth-btn-secondary:hover {
+        background: #eef5ec;
+        transform: translateY(-2px);
+    }
+
+    .auth-features {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid #e8ede6;
+        flex-wrap: wrap;
+    }
+
+    .auth-feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: #5a7e5c;
+    }
+
+    .auth-feature i {
+        color: #2e7d32;
+        font-size: 0.9rem;
+    }
+
+    @keyframes fadeSlide {
+        0% { opacity: 0; transform: translateY(8px);}
+        100% { opacity: 1; transform: translateY(0);}
+    }
+
+    @media (max-width: 700px) {
+        .expertise-wrap { padding: 0 16px; margin-top: 90px; }
+        .details-grid { padding: 20px; }
+        .decision-row { flex-direction: column; }
+        .auth-block-inner { padding: 32px 24px; }
+        .auth-block-modern h3 { font-size: 1.4rem; }
+        .auth-buttons { flex-direction: column; width: 100%; }
+        .auth-btn { justify-content: center; }
+        .auth-features { flex-direction: column; align-items: center; gap: 12px; }
+    }
+</style>
+
+<div class="expertise-wrap">
+    <div class="ex-header">
+        <h1 class="fade-up">Экологическая экспертиза</h1>
+        <p class="fade-up delay-1">Искусственный интеллект оценит качество вашего экспертного заключения</p>
+    </div>
+
+    <div class="selector-bar fade-up delay-2">
+        <h2>Проекты для анализа</h2>
+        <select id="filterSelect">
+            <option value="all">Все категории</option>
+            <option value="Промышленный">Промышленные</option>
+            <option value="Сельскохозяйственный">Сельскохозяйственные</option>
+            <option value="Инфраструктурный">Инфраструктурные</option>
+            <option value="Энергетический">Энергетические</option>
+        </select>
+    </div>
+
+    <div id="projectsGrid" class="projects-grid"></div>
+
+    <div id="detailsArea" class="details-panel"></div>
+    <div id="formArea" class="expertise-form"></div>
+    <div id="resultArea" class="result-panel"></div>
+</div>
+
+<script>
+    let currentProject = null;
+    let projectList = [];
+    let isLogged = false;
+    let currentFilter = 'all';
+
+    const $ = (id) => document.getElementById(id);
+
+    async function init() {
+        const auth = await fetch('/api/current-user');
+        const authData = await auth.json();
+        isLogged = authData.authenticated;
+
+        if (!isLogged) {
+            renderAuthBlock();
+            $('filterSelect').addEventListener('change', () => {
+                renderAuthBlock();
+            });
+            return;
+        }
+        await fetchProjects();
+        $('filterSelect').addEventListener('change', renderProjects);
+    }
+
+    function renderAuthBlock() {
+        const filter = $('filterSelect').value;
+        let filterText = '';
+        switch(filter) {
+            case 'Промышленный': filterText = 'промышленным'; break;
+            case 'Сельскохозяйственный': filterText = 'сельскохозяйственным'; break;
+            case 'Инфраструктурный': filterText = 'инфраструктурным'; break;
+            case 'Энергетический': filterText = 'энергетическим'; break;
+            default: filterText = 'всем';
+        }
+
+        const container = $('projectsGrid');
+        container.innerHTML = `
+            <div class="auth-block-modern fade-up">
+                <div class="auth-block-inner">
+                    <div class="auth-icon-wrapper">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Доступ к экспертизе</h3>
+                    <p>Чтобы просматривать проекты и участвовать в экологической экспертизе, необходимо войти в аккаунт</p>
+                    <div class="auth-buttons">
+                        <a href="/login" class="auth-btn auth-btn-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Войти</span>
+                        </a>
+                        <a href="/register" class="auth-btn auth-btn-secondary">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Создать аккаунт</span>
+                        </a>
+                    </div>
+                    <div class="auth-features">
+                        <div class="auth-feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Отслеживайте прогресс</span>
+                        </div>
+                        <div class="auth-feature">
+                            <i class="fas fa-trophy"></i>
+                            <span>Получайте достижения</span>
+                        </div>
+                        <div class="auth-feature">
+                            <i class="fas fa-robot"></i>
+                            <span>Анализ от ИИ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('detailsArea').style.display = 'none';
+        $('formArea').style.display = 'none';
+        $('resultArea').style.display = 'none';
+    }
+
+    async function fetchProjects() {
+        const resp = await fetch('/api/projects-list');
+        projectList = await resp.json();
+        renderProjects();
+    }
+
+    function renderProjects() {
+        const filter = $('filterSelect').value;
+        let filtered = filter === 'all' ? projectList : projectList.filter(p => p.type === filter);
+        const container = $('projectsGrid');
+
+        if (!filtered.length) {
+            container.innerHTML = '<div class="auth-block-modern" style="background:#f6f9f4;"><div class="auth-block-inner"><div class="auth-icon-wrapper" style="background:#e8f5e9;"><i class="fas fa-folder-open"></i></div><h3>Нет проектов</h3><p>В этой категории пока нет доступных проектов</p></div></div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map((p, index) => `
+            <div class="project-tile fade-up delay-${Math.min(index % 4 + 1, 4)} ${p.is_completed ? 'completed' : ''}" data-id="${p.id}">
+                <div class="tile-header">
+                    <span class="type-badge">${escapeHtml(p.type)}</span>
+                    ${p.user_best_score ? `<span class="best-badge">${p.user_best_score}/10</span>` : ''}
+                </div>
+                <div class="tile-title">${escapeHtml(p.title)}</div>
+                <div class="stats-row">
+                    ${p.user_best_score ? `<span>Лучший результат <span class="best-score">${p.user_best_score}/10</span></span>` : ''}
+                    <span>Пройдено: ${p.user_attempts} раз</span>
+                </div>
+                <div class="tile-footer">
+                    <span>${escapeHtml(p.region)}</span>
+                    <span>${p.investment || 0} млн руб.</span>
+                    <span>Сложность ${p.points}/10</span>
+                </div>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.project-tile').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const id = parseInt(el.dataset.id);
+                selectProject(id);
+            });
+        });
+    }
+
+    async function selectProject(id) {
+        document.querySelectorAll('.project-tile').forEach(c => c.classList.remove('selected'));
+        const target = document.querySelector(`.project-tile[data-id="${id}"]`);
+        if (target) target.classList.add('selected');
+
+        const resp = await fetch(`/api/projects/${id}`);
+        currentProject = await resp.json();
+
+        renderDetails(currentProject);
+        renderForm();
+        $('resultArea').style.display = 'none';
+    }
+
+    function renderDetails(p) {
+        const detailsDiv = $('detailsArea');
+        detailsDiv.style.display = 'block';
+        detailsDiv.innerHTML = `
+            <div class="details-head">
+                <h2>${escapeHtml(p.title)}</h2>
+                <p>${escapeHtml(p.initiator)} | Объём инвестиций: ${p.investment_amount || 0} млн руб.</p>
+            </div>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h4>География</h4>
+                    <div class="detail-row"><span>Регион:</span><span>${escapeHtml(p.region)}</span></div>
+                    <div class="detail-row"><span>Район:</span><span>${escapeHtml(p.district)}</span></div>
+                    <div class="detail-row"><span>Ландшафт:</span><span>${escapeHtml(p.landscape_type)}</span></div>
+                    <div class="detail-row"><span>Общая площадь:</span><span>${p.total_area || 0} га</span></div>
+                </div>
+                <div class="detail-card">
+                    <h4>Водные ресурсы</h4>
+                    <div class="detail-row"><span>Расстояние до воды:</span><span>${p.distance_to_water || 0} км</span></div>
+                    <div class="detail-row"><span>Водный объект:</span><span>${escapeHtml(p.water_body_name)}</span></div>
+                    <div class="detail-row"><span>Глубина грунтовых вод:</span><span>${p.groundwater_depth || 0} м</span></div>
+                </div>
+                <div class="detail-card">
+                    <h4>Биоразнообразие</h4>
+                    <div class="detail-row"><span>Краснокнижные виды:</span><span>${escapeHtml(p.red_book_species) || 'отсутствуют'}</span></div>
+                    <div class="detail-row"><span>Растительность:</span><span>${escapeHtml(p.vegetation_type)}</span></div>
+                </div>
+                <div class="detail-card">
+                    <h4>Технология / отходы</h4>
+                    <div class="detail-row"><span>Тип технологии:</span><span>${escapeHtml(p.technology_type)}</span></div>
+                    <div class="detail-row"><span>Отходы:</span><span>${p.waste_volume || 0} тыс. т/год</span></div>
+                    <div class="detail-row"><span>Водопотребление:</span><span>${p.water_consumption || 0} тыс. м³/год</span></div>
+                    <div class="detail-row"><span>Компенсационные меры:</span><span>${escapeHtml(p.compensation_measures) || '—'}</span></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderForm() {
+        const formDiv = $('formArea');
+        formDiv.style.display = 'block';
+        formDiv.innerHTML = `
+            <h3>Заключение эксперта</h3>
+            <div class="decision-row">
+                <label class="decision-label"><input type="radio" name="verdict" value="approve"> Согласовать проект</label>
+                <label class="decision-label"><input type="radio" name="verdict" value="revise"> Отправить на доработку</label>
+                <label class="decision-label"><input type="radio" name="verdict" value="reject"> Отклонить проект</label>
+            </div>
+            <textarea id="opinionField" class="opinion-area" placeholder="Опишите ваше экспертное заключение: учтённые риски, влияние на экосистему, оценку компенсационных мероприятий, аргументацию решения…"></textarea>
+            <div id="charInfo" style="text-align:right; margin-top:8px; font-size:12px; color:#5d795f;">0 символов</div>
+            <button id="submitOpinion" class="btn-primary">Отправить на экспертизу</button>
+        `;
+
+        const opinionArea = document.getElementById('opinionField');
+        const charSpan = document.getElementById('charInfo');
+        opinionArea.addEventListener('input', () => {
+            charSpan.innerText = opinionArea.value.length + ' символов';
+        });
+
+        document.getElementById('submitOpinion').addEventListener('click', () => submitExpertise());
+    }
+
+    async function submitExpertise() {
+        const decisionRad = document.querySelector('input[name="verdict"]:checked');
+        if (!decisionRad) {
+            alert('Пожалуйста, выберите решение по проекту');
+            return;
+        }
+        const opinionText = document.getElementById('opinionField').value.trim();
+        if (opinionText.length < 100) {
+            alert('Экспертное заключение должно содержать не менее 100 символов');
+            return;
+        }
+
+        const btn = document.getElementById('submitOpinion');
+        const originalLabel = btn.innerText;
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:inline-block; width:16px; height:16px; border:2px solid white; border-top:2px solid transparent; border-radius:50%; animation: spin 0.7s linear infinite; margin-right:8px;"></span> Анализ...';
+
+        // Добавляем стиль для спиннера, если его еще нет
+        if (!document.querySelector('#spinner-style')) {
+            const style = document.createElement('style');
+            style.id = 'spinner-style';
+            style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+            document.head.appendChild(style);
+        }
+
+        try {
+            const resp = await fetch('/api/ai-expertise', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: currentProject.id,
+                    expert_opinion: opinionText,
+                    decision: decisionRad.value
+                })
+            });
+            if (!resp.ok) throw new Error('Ошибка сервера');
+            const result = await resp.json();
+            showResult(result);
+            await fetchProjects();
+        } catch (err) {
+            alert('Ошибка: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalLabel;
+        }
+    }
+
+    function showResult(data) {
+        const resultDiv = $('resultArea');
+        let analysis = data.analysis || 'Анализ не получен.';
+        analysis = analysis.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        resultDiv.innerHTML = `
+            <div class="result-header">
+                <h3>Заключение комиссии</h3>
+                <span class="score-circle">Оценка: ${data.score}/10</span>
+            </div>
+            <div class="result-content">${analysis}</div>
+            <button id="resetExpertiseBtn" class="btn-secondary">Новая экспертиза</button>
+        `;
+        resultDiv.style.display = 'block';
+
+        document.getElementById('resetExpertiseBtn').addEventListener('click', () => {
+            resultDiv.style.display = 'none';
+            $('formArea').style.display = 'none';
+            $('detailsArea').style.display = 'none';
+            document.querySelectorAll('.project-tile').forEach(c => c.classList.remove('selected'));
+            currentProject = null;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '—';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    init();
+</script>
+{% endblock %}

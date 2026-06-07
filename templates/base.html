@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}OrenEco — Геоэкологический центр{% endblock %}</title>
+    <link rel="icon" href="/static/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    {% block styles %}{% endblock %}
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav>
+            <a href="/">
+                <div class="logo">Oren<span>Eco</span></div>
+            </a>
+
+            <button class="burger" id="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-links">
+                <a href="/expertise" data-text="Экспертиза">Экспертиза</a>
+                <a href="/map" data-text="Карта загрязнения">Карта загрязнения</a>
+                <a href="/charts" data-text="Графики">Графики</a>
+                <a href="/contacts" data-text="Контакты">Контакты</a>
+                <a href="/articles" data-text="Статьи">Статьи</a>
+                <a href="/profile">
+                    <div class="profile-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu">
+    <div class="container">
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="/expertise">Экспертиза</a>
+            <a href="/map">Карта загрязнения</a>
+            <a href="/charts">Графики</a>
+            <a href="/contacts">Контакты</a>
+            <a href="/articles">Статьи</a>
+            <a href="/profile">
+                <div class="profile-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>О нас</h4>
+                <ul>
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="/about">О центре</a></li>
+                    <li><a href="/team">Команда</a></li>
+                    <li><a href="/reports">Отчёты</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Проекты</h4>
+                <ul>
+                    <li><a href="/map">Карта загрязнения</a></li>
+                    <li><a href="/expertise">Экологическая экспертиза</a></li>
+                    <li><a href="/monitoring">Мониторинг</a></li>
+                    <li><a href="/research">Исследования</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Поддержка</h4>
+                <ul>
+                    <li><a href="/faq">Частые вопросы</a></li>
+                    <li><a href="/contact">Связаться</a></li>
+                    <li><a href="/api">API данных</a></li>
+                    <li><a href="/privacy">Политика конфиденциальности</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Мы в соцсетях</h4>
+                <p>Следите за нашими исследованиями</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 OrenEco. Все права защищены.
+        </div>
+    </div>
+</footer>
+
+<script src="/static/js/script.js"></script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

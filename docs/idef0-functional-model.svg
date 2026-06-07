@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333"/>
+    </marker>
+    <style>
+      .line { stroke:#333; stroke-width:2; fill:none; marker-end:url(#arrow); }
+      .box { fill:#fff; stroke:#555; stroke-width:2; }
+      .main { fill:#fff; stroke:#333; stroke-width:2.4; }
+      .text { font-family:Arial, sans-serif; font-size:20px; fill:#222; }
+      .small { font-family:Arial, sans-serif; font-size:17px; fill:#222; }
+      .vertical { writing-mode:tb; glyph-orientation-vertical:0; font-family:Arial, sans-serif; font-size:18px; fill:#222; }
+      .caption { font-family:Arial, sans-serif; font-size:18px; fill:#111; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="760" fill="#fff"/>
+
+  <!-- Central function -->
+  <rect x="430" y="300" width="340" height="150" class="main"/>
+  <text x="600" y="365" text-anchor="middle" class="text">Веб-приложение</text>
+  <text x="600" y="397" text-anchor="middle" class="text">«OrenEco»</text>
+
+  <!-- Inputs -->
+  <rect x="55" y="270" width="285" height="32" class="box"/>
+  <text x="197" y="293" text-anchor="middle" class="small">Данные пользователей</text>
+  <path d="M340 286 H430" class="line"/>
+
+  <rect x="55" y="340" width="285" height="32" class="box"/>
+  <text x="197" y="363" text-anchor="middle" class="small">Экологические данные</text>
+  <path d="M340 356 H430" class="line"/>
+
+  <rect x="55" y="410" width="285" height="32" class="box"/>
+  <text x="197" y="433" text-anchor="middle" class="small">Данные статей и проектов</text>
+  <path d="M340 426 H430" class="line"/>
+
+  <!-- Controls -->
+  <rect x="470" y="35" width="46" height="185" class="box"/>
+  <text x="493" y="68" class="vertical">Техническое задание</text>
+  <path d="M493 220 V300" class="line"/>
+
+  <rect x="580" y="80" width="46" height="140" class="box"/>
+  <text x="603" y="93" class="vertical">Роли доступа</text>
+  <path d="M603 220 V300" class="line"/>
+
+  <rect x="690" y="25" width="46" height="195" class="box"/>
+  <text x="713" y="68" class="vertical">Правила обработки данных</text>
+  <path d="M713 220 V300" class="line"/>
+
+  <!-- Outputs -->
+  <path d="M770 318 H860" class="line"/>
+  <rect x="860" y="302" width="285" height="32" class="box"/>
+  <text x="1002" y="325" text-anchor="middle" class="small">Страницы сайта</text>
+
+  <path d="M770 358 H860" class="line"/>
+  <rect x="860" y="342" width="285" height="32" class="box"/>
+  <text x="1002" y="365" text-anchor="middle" class="small">Интерактивная карта</text>
+
+  <path d="M770 398 H860" class="line"/>
+  <rect x="860" y="382" width="285" height="32" class="box"/>
+  <text x="1002" y="405" text-anchor="middle" class="small">Графики и диаграммы</text>
+
+  <path d="M770 438 H860" class="line"/>
+  <rect x="860" y="422" width="285" height="32" class="box"/>
+  <text x="1002" y="445" text-anchor="middle" class="small">Административная панель</text>
+
+  <!-- Mechanisms -->
+  <path d="M493 580 V450" class="line"/>
+  <rect x="470" y="580" width="46" height="145" class="box"/>
+  <text x="493" y="612" class="vertical">Пользователь</text>
+
+  <path d="M603 540 V450" class="line"/>
+  <rect x="580" y="540" width="46" height="185" class="box"/>
+  <text x="603" y="553" class="vertical">Сервер и база данных</text>
+
+  <path d="M713 560 V450" class="line"/>
+  <rect x="690" y="560" width="46" height="165" class="box"/>
+  <text x="713" y="573" class="vertical">Внешние сервисы</text>
+</svg>

@@ -1,0 +1,1237 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет — OrenEco{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ========== АНИМАЦИИ ПОЯВЛЕНИЯ (параллакс эффект) ========== */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.15s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.45s;
+    }
+
+    .delay-4 {
+        animation-delay: 0.6s;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .profile-page {
+        min-height: calc(100vh - 300px);
+        background: #f5f7f5;
+    }
+
+    /* Hero Block */
+    .hero-section {
+        background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+        position: relative;
+        overflow: hidden;
+        padding: 5rem 2rem;
+        margin-bottom: 4rem;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.03)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        background-repeat: no-repeat;
+        background-position: bottom;
+        background-size: cover;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .hero-content {
+        flex: 1;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        color: #c8e6c9;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .hero-title span {
+        background: linear-gradient(120deg, #a5d6a7, #e8f5e9);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+        max-width: 500px;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-stat {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .hero-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .hero-stat-label {
+        font-size: 0.8rem;
+        color: #c8e6c9;
+    }
+
+    .hero-avatar {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-avatar i {
+        font-size: 3.5rem;
+        color: white;
+    }
+
+    .logout-hero-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 100px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .logout-hero-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Stats Cards */
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto 4rem;
+        padding: 0 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+        border: 1px solid #e8ede6;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        border-color: #c8dec6;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        background: #eef5ec;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon i {
+        font-size: 1.5rem;
+        color: #2e7d32;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a3b1e;
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        color: #7a8a7c;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .stat-trend {
+        margin-top: 0.75rem;
+        font-size: 0.7rem;
+        color: #2e7d32;
+        background: #eef5ec;
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-weight: 500;
+    }
+
+    /* Achievements Section - Full Width with different BG */
+    .achievements-fullwidth {
+        background: #eaf2e8;
+        padding: 4rem 2rem;
+        margin-bottom: 4rem;
+        border-top: 1px solid #dce8d8;
+        border-bottom: 1px solid #dce8d8;
+    }
+
+    .achievements-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .achievements-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .achievements-header h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a3b1e;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .achievements-header h3 i {
+        color: #2e7d32;
+        font-size: 1.6rem;
+    }
+
+    .achievements-subtitle {
+        font-size: 0.85rem;
+        color: #6a8a6c;
+    }
+
+    .achievements-grid {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .achievement {
+        background: white;
+        border-radius: 20px;
+        padding: 1.25rem 1.5rem;
+        text-align: center;
+        min-width: 130px;
+        transition: all 0.2s ease;
+        border: 1px solid #dce8d8;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .achievement:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .achievement.locked {
+        opacity: 0.6;
+        background: #f5f7f5;
+    }
+
+    .achievement-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.75rem;
+        color: #2e7d32;
+    }
+
+    .achievement-icon i {
+        font-size: 1.8rem;
+    }
+
+    .achievement.locked .achievement-icon i {
+        color: #b8ceb6;
+    }
+
+    .achievement-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #2c3e2a;
+        margin-bottom: 0.25rem;
+    }
+
+    .achievement-desc {
+        font-size: 0.65rem;
+        color: #8a9a8c;
+        margin-bottom: 0.5rem;
+    }
+
+    .achievement-status {
+        font-size: 0.7rem;
+        color: #2e7d32;
+    }
+
+    .achievement.locked .achievement-status {
+        color: #b0c0ae;
+    }
+
+    .click-hint {
+        position: absolute;
+        bottom: 8px;
+        right: 12px;
+        font-size: 0.6rem;
+        color: #b8ceb6;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .achievement:hover .click-hint {
+        opacity: 1;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-container {
+        background: white;
+        border-radius: 28px;
+        max-width: 450px;
+        width: 90%;
+        padding: 0;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-overlay.active .modal-container {
+        transform: scale(1);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        padding: 1.5rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modal-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .achievement-detail-icon {
+        text-align: center;
+        font-size: 3rem;
+        color: #2e7d32;
+        margin-bottom: 1rem;
+    }
+
+    .achievement-detail-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a3b1e;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .achievement-detail-desc {
+        font-size: 0.9rem;
+        color: #5a6e5c;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e8ede6;
+    }
+
+    .achievement-progress {
+        margin: 1rem 0;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: #5a6e5c;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-bg {
+        background: #e8ede6;
+        border-radius: 100px;
+        height: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        background: linear-gradient(90deg, #2e7d32, #4caf50);
+        height: 100%;
+        border-radius: 100px;
+        transition: width 0.5s ease;
+    }
+
+    .achievement-info {
+        background: #f5f7f5;
+        border-radius: 16px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.85rem;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #2c3e2a;
+    }
+
+    .info-value {
+        color: #2e7d32;
+        font-weight: 600;
+    }
+
+    .achievement-status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    .status-unlocked {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-locked {
+        background: #ffefef;
+        color: #f44336;
+    }
+
+    /* History Section */
+    .history-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+    }
+
+    .history-section {
+        background: white;
+        border-radius: 24px;
+        padding: 1.5rem;
+        border: 1px solid #e8ede6;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .section-header h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1a3b1e;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-header h3 i {
+        color: #2e7d32;
+    }
+
+    .expertise-table {
+        overflow-x: auto;
+    }
+
+    .expertise-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .expertise-table th {
+        text-align: left;
+        padding: 1rem 0.75rem;
+        background: transparent;
+        color: #5a6e5c;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #e8ede6;
+    }
+
+    .expertise-table td {
+        padding: 1rem 0.75rem;
+        border-bottom: 1px solid #f0f4f0;
+        color: #2c3e2a;
+        font-size: 0.85rem;
+    }
+
+    .expertise-table tr:hover td {
+        background: #fafdf9;
+    }
+
+    .score-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 55px;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .score-high {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .score-mid {
+        background: #ff9800;
+        color: white;
+    }
+
+    .score-low {
+        background: #f44336;
+        color: white;
+    }
+
+    .decision-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+
+    .decision-approved {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .decision-revise {
+        background: #fff8e7;
+        color: #ed6c02;
+    }
+
+    .decision-rejected {
+        background: #ffefef;
+        color: #d32f2f;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #9aae9c;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+        color: #c8dec6;
+        margin-bottom: 1rem;
+    }
+
+    .btn-start {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #2e7d32;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 100px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-start i {
+        font-size: 0.8rem;
+    }
+
+    .btn-start:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-container {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hero-description {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            justify-content: center;
+        }
+
+        .logout-hero-btn {
+            margin-left: 0;
+        }
+
+        .stats-container,
+        .history-container {
+            padding: 0 1rem;
+        }
+
+        .achievements-fullwidth {
+            padding: 2.5rem 1rem;
+        }
+
+        .achievements-header h3 {
+            font-size: 1.4rem;
+        }
+
+        .expertise-table th,
+        .expertise-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .modal-container {
+            width: 95%;
+        }
+    }
+</style>
+
+<div class="profile-page">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge fade-up">
+                    <i class="fas fa-certificate"></i>
+                    <span id="user-role-text">Эко-активист</span>
+                </div>
+                <div class="hero-title fade-up delay-1">
+                    Привет, <span id="welcome-name">друг</span>!
+                </div>
+                <div class="hero-description fade-up delay-2" id="user-email"></div>
+                <div class="hero-stats fade-up delay-3">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="hero-total">0</span>
+                        <span class="hero-stat-label">экспертиз</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="hero-avg">0</span>
+                        <span class="hero-stat-label">средний балл</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-avatar fade-up delay-4">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <button class="logout-hero-btn fade-up delay-4" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Выйти</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-card fade-up">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-value" id="total-expertises">0</div>
+                <div class="stat-label">Проведено экспертиз</div>
+                <div class="stat-trend" id="trend-badge">
+                    <i class="fas fa-chart-line"></i> Активный участник
+                </div>
+            </div>
+            <div class="stat-card fade-up delay-1">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value" id="avg-score">0</div>
+                <div class="stat-label">Средняя оценка</div>
+                <div class="stat-trend" id="score-quality">
+                    <i class="fas fa-chart-simple"></i> В процессе
+                </div>
+            </div>
+            <div class="stat-card fade-up delay-2">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-value" id="best-score">—</div>
+                <div class="stat-label">Лучший результат</div>
+                <div class="stat-trend">
+                    <i class="fas fa-medal"></i> Личный рекорд
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section - Full Width -->
+    <div class="achievements-fullwidth">
+        <div class="achievements-container">
+            <div class="achievements-header fade-up">
+                <h3>
+                    <i class="fas fa-award"></i>
+                    <span>Мои достижения</span>
+                </h3>
+                <div class="achievements-subtitle">
+                    <i class="fas fa-chart-simple"></i> Нажмите на достижение для подробной информации
+                </div>
+            </div>
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Achievements via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-container">
+        <div class="history-section fade-up delay-3">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-history"></i>
+                    <span>История экспертиз</span>
+                </h3>
+                <a href="/expertise" class="btn-start">
+                    <i class="fas fa-plus"></i>
+                    <span>Новая экспертиза</span>
+                </a>
+            </div>
+            <div class="expertise-table" id="expertise-table">
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-clipboard"></i>
+                    </div>
+                    <p>У вас пока нет проведённых экспертиз</p>
+                    <a href="/expertise" class="btn-start">Начать первую экспертизу</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for achievement details -->
+<div id="achievementModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 id="modalTitle">
+                <i class="fas fa-award"></i>
+                <span>Достижение</span>
+            </h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentAchievementData = null;
+    let userStatsGlobal = { totalExpertises: 0, avgScore: 0, bestScore: null };
+
+    async function loadProfile() {
+        try {
+            const authResponse = await fetch('/api/current-user');
+            const authData = await authResponse.json();
+
+            if (!authData.authenticated) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const statsResponse = await fetch('/api/user-stats');
+            const stats = await statsResponse.json();
+
+            userStatsGlobal = {
+                totalExpertises: stats.total_expertises,
+                avgScore: parseFloat(stats.avg_score),
+                bestScore: stats.best_score
+            };
+
+            document.getElementById('welcome-name').innerHTML = authData.username || 'друг';
+            document.getElementById('user-email').innerHTML = `<i class="fas fa-envelope" style="margin-right: 6px;"></i>${authData.email || 'Добро пожаловать в OrenEco'}`;
+
+            const roleText = authData.role === 'user' ? 'Эко-активист' :
+                            authData.role === 'expert' ? 'Эксперт-эколог' : 'Администратор';
+            document.getElementById('user-role-text').innerHTML = roleText;
+
+            document.getElementById('hero-total').textContent = stats.total_expertises;
+            document.getElementById('hero-avg').textContent = stats.avg_score;
+
+            document.getElementById('total-expertises').textContent = stats.total_expertises;
+            document.getElementById('avg-score').textContent = stats.avg_score;
+
+            const avgScore = parseFloat(stats.avg_score);
+            let qualityText = '';
+            let qualityIcon = '';
+            if (avgScore >= 8) {
+                qualityText = 'Отличный эксперт';
+                qualityIcon = '<i class="fas fa-crown"></i>';
+            } else if (avgScore >= 6) {
+                qualityText = 'Хороший прогресс';
+                qualityIcon = '<i class="fas fa-chart-line"></i>';
+            } else if (avgScore >= 4) {
+                qualityText = 'Начинающий';
+                qualityIcon = '<i class="fas fa-seedling"></i>';
+            } else {
+                qualityText = 'Учимся дальше';
+                qualityIcon = '<i class="fas fa-book"></i>';
+            }
+            document.getElementById('score-quality').innerHTML = qualityIcon + ' ' + qualityText;
+
+            if (stats.best_score && stats.best_score > 0) {
+                document.getElementById('best-score').innerHTML = `${stats.best_score}/10`;
+            } else {
+                document.getElementById('best-score').innerHTML = '—';
+            }
+
+            loadAchievements(stats.total_expertises, avgScore);
+
+            if (stats.recent && stats.recent.length > 0) {
+                loadHistory(stats.recent);
+            } else {
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) emptyState.style.display = 'block';
+            }
+
+        } catch (err) {
+            console.error('Ошибка загрузки профиля:', err);
+        }
+    }
+
+    function loadAchievements(totalExpertises, avgScore) {
+        const achievements = [
+            {
+                id: 'first_step',
+                name: 'Первый шаг',
+                desc: 'Проведена первая экспертиза',
+                icon: 'fas fa-flag-checkered',
+                type: 'count',
+                required: 1,
+                current: totalExpertises,
+                unlocked: totalExpertises >= 1,
+                detailInfo: 'Первая экспертиза — важный шаг на пути к становлению экспертом!'
+            },
+            {
+                id: 'eco_activist',
+                name: 'Эко-активист',
+                desc: '5 проведённых экспертиз',
+                icon: 'fas fa-leaf',
+                type: 'count',
+                required: 5,
+                current: totalExpertises,
+                unlocked: totalExpertises >= 5,
+                detailInfo: 'Вы активно участвуете в экологической экспертизе!'
+            },
+            {
+                id: 'expert',
+                name: 'Эксперт',
+                desc: '10 проведённых экспертиз',
+                icon: 'fas fa-trophy',
+                type: 'count',
+                required: 10,
+                current: totalExpertises,
+                unlocked: totalExpertises >= 10,
+                detailInfo: 'Десять экспертиз — вы настоящий профессионал!'
+            },
+            {
+                id: 'excellent',
+                name: 'Отличник',
+                desc: 'Средняя оценка выше 8',
+                icon: 'fas fa-star',
+                type: 'score',
+                required: 8,
+                current: avgScore,
+                unlocked: avgScore >= 8,
+                detailInfo: 'Отличные знания и умение аргументировать свою позицию!'
+            },
+            {
+                id: 'good',
+                name: 'Хорошист',
+                desc: 'Средняя оценка выше 6',
+                icon: 'fas fa-chart-simple',
+                type: 'score',
+                required: 6,
+                current: avgScore,
+                unlocked: avgScore >= 6,
+                detailInfo: 'Хороший результат, продолжайте совершенствоваться!'
+            },
+            {
+                id: 'defender',
+                name: 'Защитник природы',
+                desc: 'Получить 10/10 за экспертизу',
+                icon: 'fas fa-tree',
+                type: 'perfect',
+                required: 10,
+                current: userStatsGlobal.bestScore || 0,
+                unlocked: (userStatsGlobal.bestScore || 0) >= 10,
+                detailInfo: 'Идеальная экспертиза — высший пилотаж!'
+            }
+        ];
+
+        const container = document.getElementById('achievements-grid');
+        container.innerHTML = achievements.map((ach, index) => `
+            <div class="achievement fade-up delay-${Math.min(index % 4 + 1, 4)} ${ach.unlocked ? '' : 'locked'}" onclick="showAchievementDetail(${JSON.stringify(ach).replace(/"/g, '&quot;')})">
+                <div class="achievement-icon">
+                    <i class="${ach.icon}"></i>
+                </div>
+                <div class="achievement-name">${ach.name}</div>
+                <div class="achievement-desc">${ach.desc}</div>
+                <div class="achievement-status">
+                    ${ach.unlocked ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-lock"></i>'}
+                </div>
+                <div class="click-hint">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showAchievementDetail(ach) {
+        const modal = document.getElementById('achievementModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        modalTitle.innerHTML = `<i class="${ach.icon}"></i><span>${ach.name}</span>`;
+
+        let progressHtml = '';
+        let remaining = null;
+        let currentValue = ach.current;
+        let requiredValue = ach.required;
+
+        if (!ach.unlocked && ach.type !== 'perfect') {
+            remaining = requiredValue - currentValue;
+        }
+
+        const percentComplete = Math.min(100, (currentValue / requiredValue) * 100);
+
+        if (ach.type === 'count') {
+            progressHtml = `
+                <div class="achievement-progress">
+                    <div class="progress-label">
+                        <span>Прогресс</span>
+                        <span>${currentValue} / ${requiredValue}</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percentComplete}%"></div>
+                    </div>
+                </div>
+                <div class="achievement-info">
+                    <div class="info-row">
+                        <span class="info-label">Проведено экспертиз:</span>
+                        <span class="info-value">${currentValue}</span>
+                    </div>
+                    ${!ach.unlocked ? `
+                        <div class="info-row">
+                            <span class="info-label">Осталось до открытия:</span>
+                            <span class="info-value">${remaining}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else if (ach.type === 'score') {
+            const remainingScore = requiredValue - currentValue;
+            progressHtml = `
+                <div class="achievement-progress">
+                    <div class="progress-label">
+                        <span>Средний балл</span>
+                        <span>${currentValue.toFixed(1)} / ${requiredValue}</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${(currentValue / requiredValue) * 100}%"></div>
+                    </div>
+                </div>
+                <div class="achievement-info">
+                    <div class="info-row">
+                        <span class="info-label">Текущий средний балл:</span>
+                        <span class="info-value">${currentValue.toFixed(1)}</span>
+                    </div>
+                    ${!ach.unlocked ? `
+                        <div class="info-row">
+                            <span class="info-label">Нужно повысить на:</span>
+                            <span class="info-value">${remainingScore.toFixed(1)} балла</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else if (ach.type === 'perfect') {
+            progressHtml = `
+                <div class="achievement-info">
+                    <div class="info-row">
+                        <span class="info-label">Лучший результат:</span>
+                        <span class="info-value">${currentValue}/10</span>
+                    </div>
+                    ${!ach.unlocked ? `
+                        <div class="info-row">
+                            <span class="info-label">До идеальной экспертизы:</span>
+                            <span class="info-value">${10 - currentValue} баллов</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        modalBody.innerHTML = `
+            <div class="achievement-detail-icon">
+                <i class="${ach.icon}"></i>
+            </div>
+            <div class="achievement-detail-name">${ach.name}</div>
+            <div class="achievement-detail-desc">${ach.detailInfo}</div>
+            ${progressHtml}
+            <div class="achievement-status-badge ${ach.unlocked ? 'status-unlocked' : 'status-locked'}">
+                ${ach.unlocked ? '<i class="fas fa-check-circle"></i> Достижение получено!' : '<i class="fas fa-lock"></i> Достижение ещё не открыто'}
+            </div>
+        `;
+
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('achievementModal');
+        modal.classList.remove('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('achievementModal');
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    function loadHistory(recent) {
+        const tableContainer = document.getElementById('expertise-table');
+
+        const getScoreClass = (score) => {
+            if (score >= 7) return 'score-high';
+            if (score >= 4) return 'score-mid';
+            return 'score-low';
+        };
+
+        const getDecisionClass = (decision) => {
+            if (decision === 'Согласован') return 'decision-approved';
+            if (decision === 'На доработку') return 'decision-revise';
+            return 'decision-rejected';
+        };
+
+        const getDecisionIcon = (decision) => {
+            if (decision === 'Согласован') return '<i class="fas fa-check-circle"></i>';
+            if (decision === 'На доработку') return '<i class="fas fa-pen"></i>';
+            return '<i class="fas fa-times-circle"></i>';
+        };
+
+        const tableHtml = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Проект</th>
+                        <th>Решение</th>
+                        <th>Оценка</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${recent.map(item => `
+                        <tr>
+                            <td><strong>${escapeHtml(item.title)}</strong></td>
+                            <td>
+                                <span class="decision-badge ${getDecisionClass(item.decision)}">
+                                    ${getDecisionIcon(item.decision)} ${item.decision}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="score-badge ${getScoreClass(item.score)}">
+                                    ${item.score}/10
+                                </span>
+                            </td>
+                            <td>${new Date(item.date).toLocaleDateString('ru-RU')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        tableContainer.innerHTML = tableHtml;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '—';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    });
+
+    loadProfile();
+</script>
+{% endblock %}

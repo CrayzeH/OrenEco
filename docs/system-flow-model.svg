@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="720" viewBox="0 0 1900 720">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#777"/>
+    </marker>
+    <style>
+      .bg { fill:#ffffff; }
+      .box { fill:#fff3d8; stroke:#efcf91; stroke-width:1.5; rx:4; }
+      .text { font-family: Arial, sans-serif; font-size: 20px; font-weight: 700; fill:#33365c; }
+      .small { font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; fill:#33365c; }
+      .line { stroke:#888; stroke-width:2; fill:none; marker-end:url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1900" height="720" class="bg"/>
+
+  <rect x="10" y="285" width="150" height="45" class="box"/>
+  <text x="22" y="314" class="small">Пользователь</text>
+
+  <rect x="0" y="375" width="165" height="45" class="box"/>
+  <text x="12" y="404" class="small">Администратор</text>
+
+  <rect x="240" y="328" width="100" height="45" class="box"/>
+  <text x="253" y="357" class="small">Браузер</text>
+
+  <rect x="410" y="315" width="185" height="75" class="box"/>
+  <text x="422" y="345" class="text">Клиентская часть</text>
+  <text x="422" y="371" class="text">веб-приложения</text>
+
+  <rect x="670" y="5" width="230" height="145" class="box"/>
+  <text x="683" y="30" class="text">Публичные страницы:</text>
+  <text x="683" y="55" class="text">главная, карта,</text>
+  <text x="683" y="80" class="text">графики, статьи,</text>
+  <text x="683" y="105" class="text">экспертиза,</text>
+  <text x="683" y="130" class="text">контакты</text>
+
+  <rect x="675" y="190" width="225" height="125" class="box"/>
+  <text x="688" y="218" class="text">Личный кабинет:</text>
+  <text x="688" y="244" class="text">данные аккаунта,</text>
+  <text x="688" y="270" class="text">результаты</text>
+  <text x="688" y="296" class="text">экспертиз</text>
+
+  <rect x="680" y="360" width="220" height="190" class="box"/>
+  <text x="692" y="386" class="text">Административная</text>
+  <text x="692" y="412" class="text">панель:</text>
+  <text x="692" y="438" class="text">пользователи,</text>
+  <text x="692" y="464" class="text">проекты, статьи,</text>
+  <text x="692" y="490" class="text">статистика,</text>
+  <text x="692" y="516" class="text">синхронизация</text>
+  <text x="692" y="542" class="text">данных</text>
+
+  <rect x="965" y="195" width="190" height="170" class="box"/>
+  <text x="978" y="223" class="text">Серверная часть:</text>
+  <text x="978" y="249" class="text">маршруты</text>
+  <text x="978" y="275" class="text">«API»</text>
+  <text x="978" y="301" class="text">авторизация,</text>
+  <text x="978" y="327" class="text">карта, графики,</text>
+  <text x="978" y="353" class="text">экспертиза</text>
+
+  <rect x="1225" y="135" width="195" height="90" class="box"/>
+  <text x="1238" y="163" class="text">Проверка данных,</text>
+  <text x="1238" y="189" class="text">сессии, роли</text>
+
+  <rect x="1230" y="270" width="190" height="120" class="box"/>
+  <text x="1243" y="298" class="text">Внешние сервисы:</text>
+  <text x="1243" y="324" class="text">«Open-Meteo»,</text>
+  <text x="1243" y="350" class="text">«Overpass»,</text>
+  <text x="1243" y="376" class="text">«GigaChat»</text>
+
+  <rect x="1485" y="155" width="210" height="230" class="box"/>
+  <text x="1498" y="183" class="text">База данных</text>
+  <text x="1498" y="209" class="text">«SQLite»:</text>
+  <text x="1498" y="235" class="text">users, articles,</text>
+  <text x="1498" y="261" class="text">projects,</text>
+  <text x="1498" y="287" class="text">pollution_points,</text>
+  <text x="1498" y="313" class="text">forest_areas,</text>
+  <text x="1498" y="339" class="text">region_boundaries,</text>
+  <text x="1498" y="365" class="text">expertise_results</text>
+
+  <rect x="1760" y="380" width="135" height="145" class="box"/>
+  <text x="1772" y="408" class="text">Отображение</text>
+  <text x="1772" y="434" class="text">результата:</text>
+  <text x="1772" y="460" class="text">страницы,</text>
+  <text x="1772" y="486" class="text">карта, графики,</text>
+  <text x="1772" y="512" class="text">сообщения</text>
+
+  <path d="M160 307 C190 315 210 330 240 348" class="line"/>
+  <path d="M165 397 C195 388 215 370 240 355" class="line"/>
+  <path d="M340 350 H410" class="line"/>
+
+  <path d="M595 346 C645 270 655 165 670 138" class="line"/>
+  <path d="M595 355 C620 330 645 285 675 260" class="line"/>
+  <path d="M595 370 C625 395 650 420 680 448" class="line"/>
+
+  <path d="M900 78 C925 105 945 145 965 220" class="line"/>
+  <path d="M900 252 H965" class="line"/>
+  <path d="M900 455 C925 420 945 375 965 340" class="line"/>
+
+  <path d="M1155 240 L1225 185" class="line"/>
+  <path d="M1155 285 H1230" class="line"/>
+  <path d="M1420 180 L1485 220" class="line"/>
+  <path d="M1420 330 L1485 305" class="line"/>
+
+  <path d="M1695 270 C1730 300 1750 345 1760 410" class="line"/>
+  <path d="M1155 330 C1320 485 1590 510 1760 455" class="line"/>
+  <path d="M1760 500 C1450 665 760 655 510 390" class="line"/>
+</svg>
