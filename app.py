@@ -174,6 +174,11 @@ def ask_gigachat(prompt):
 
 
 # ==================== СТРАНИЦЫ ====================
+@app.route('/health')
+def health_check():
+    return jsonify({'status': 'ok'})
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -1255,4 +1260,4 @@ if __name__ == '__main__':
     print("🚀 Запуск сервера...")
     print("📱 Открой в браузере: http://127.0.0.1:5000")
     print("👑 Админ: admin / admin123")
-    app.run(debug=True)
+    app.run(debug=False)
