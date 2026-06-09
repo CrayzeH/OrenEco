@@ -10,9 +10,18 @@
         min-height: 100vh;
     }
 
+    .simple-page .container {
+        max-width: 980px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .simple-hero {
         max-width: 820px;
+        text-align: center;
         margin-bottom: 2rem;
+        animation: faqFadeUp 0.8s ease both;
     }
 
     .simple-eyebrow {
@@ -35,12 +44,14 @@
         color: #52625a;
         font-size: 1.08rem;
         max-width: 720px;
+        margin: 0 auto;
     }
 
     .faq-list {
         display: grid;
         gap: 1rem;
         max-width: 900px;
+        width: 100%;
     }
 
     .faq-item {
@@ -49,6 +60,19 @@
         border-radius: 18px;
         box-shadow: 0 12px 28px rgba(46, 125, 50, 0.08);
         overflow: hidden;
+        animation: faqFadeUp 0.8s ease both;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .faq-item:nth-child(2) { animation-delay: 0.08s; }
+    .faq-item:nth-child(3) { animation-delay: 0.16s; }
+    .faq-item:nth-child(4) { animation-delay: 0.24s; }
+    .faq-item:nth-child(5) { animation-delay: 0.32s; }
+
+    .faq-item:hover {
+        transform: translateY(-3px);
+        border-color: #b8dbb3;
+        box-shadow: 0 18px 34px rgba(46, 125, 50, 0.13);
     }
 
     .faq-item summary {
@@ -78,6 +102,17 @@
     .faq-item p {
         padding: 0 1.35rem 1.25rem;
         color: #56645b;
+    }
+
+    @keyframes faqFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 {% endblock %}

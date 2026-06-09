@@ -10,6 +10,11 @@
         min-height: 100vh;
     }
 
+    .policy-page .container {
+        display: flex;
+        justify-content: center;
+    }
+
     .policy-card {
         background: #ffffff;
         border: 1px solid #deebda;
@@ -17,6 +22,8 @@
         box-shadow: 0 18px 42px rgba(46, 125, 50, 0.1);
         padding: clamp(1.4rem, 4vw, 3rem);
         max-width: 980px;
+        width: 100%;
+        animation: policyFadeUp 0.85s ease both;
     }
 
     .policy-card h1 {
@@ -35,7 +42,13 @@
         border-top: 1px solid #e6f0e2;
         padding-top: 1.4rem;
         margin-top: 1.4rem;
+        animation: policyFadeUp 0.75s ease both;
     }
+
+    .policy-section:nth-of-type(2) { animation-delay: 0.08s; }
+    .policy-section:nth-of-type(3) { animation-delay: 0.16s; }
+    .policy-section:nth-of-type(4) { animation-delay: 0.24s; }
+    .policy-section:nth-of-type(5) { animation-delay: 0.32s; }
 
     .policy-section h2 {
         color: #2e7d32;
@@ -46,6 +59,17 @@
     .policy-section p {
         color: #4c5c53;
         margin-bottom: 0.7rem;
+    }
+
+    @keyframes policyFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 {% endblock %}
