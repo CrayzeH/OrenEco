@@ -181,6 +181,17 @@ nav {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.mobile-header-actions {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mobile-profile-link {
+    display: none;
+    align-items: center;
+}
+
 .burger {
     display: none;
     flex-direction: column;
@@ -720,6 +731,14 @@ footer {
 @media (max-width: 768px) {
     header .nav-links {
         display: none;
+    }
+
+    .mobile-header-actions {
+        display: flex;
+    }
+
+    .mobile-profile-link {
+        display: flex;
     }
 
     .burger {

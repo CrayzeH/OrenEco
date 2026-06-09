@@ -256,6 +256,21 @@ def charts_page():
     return render_template('charts.html')
 
 
+@app.route('/faq')
+def faq_page():
+    return render_template('faq.html')
+
+
+@app.route('/privacy')
+def privacy_page():
+    return render_template('privacy.html')
+
+
+@app.route('/about')
+def about_page():
+    return render_template('about.html')
+
+
 @app.route('/article/<int:article_id>')
 def article_detail_page(article_id):
     return render_template('article_detail.html', article_id=article_id)

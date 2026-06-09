@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Политика конфиденциальности — OrenEco{% endblock %}
+
+{% block styles %}
+<style>
+    .policy-page {
+        padding: 140px 0 80px;
+        background: #f7fbf5;
+        min-height: 100vh;
+    }
+
+    .policy-card {
+        background: #ffffff;
+        border: 1px solid #deebda;
+        border-radius: 22px;
+        box-shadow: 0 18px 42px rgba(46, 125, 50, 0.1);
+        padding: clamp(1.4rem, 4vw, 3rem);
+        max-width: 980px;
+    }
+
+    .policy-card h1 {
+        color: #1f3323;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        margin-bottom: 1rem;
+    }
+
+    .policy-lead {
+        color: #53635a;
+        font-size: 1.08rem;
+        margin-bottom: 2rem;
+    }
+
+    .policy-section {
+        border-top: 1px solid #e6f0e2;
+        padding-top: 1.4rem;
+        margin-top: 1.4rem;
+    }
+
+    .policy-section h2 {
+        color: #2e7d32;
+        font-size: 1.25rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .policy-section p {
+        color: #4c5c53;
+        margin-bottom: 0.7rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="policy-page">
+    <div class="container">
+        <article class="policy-card">
+            <h1>Политика конфиденциальности</h1>
+            <p class="policy-lead">Настоящая политика описывает порядок обработки данных пользователей веб-приложения «OrenEco» и применяется ко всем разделам сайта.</p>
+
+            <div class="policy-section">
+                <h2>Какие данные могут обрабатываться</h2>
+                <p>Сайт может обрабатывать имя пользователя, адрес электронной почты, телефон, сведения учетной записи, данные формы обратной связи, результаты экологической экспертизы и техническую информацию, необходимую для работы веб-приложения.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>Цели обработки данных</h2>
+                <p>Данные используются для регистрации и авторизации пользователей, отображения личного кабинета, обработки обращений, сохранения результатов экспертизы, администрирования сайта и повышения удобства работы с экологической информацией.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>Хранение и защита</h2>
+                <p>Информация хранится в базе данных веб-приложения. Для снижения рисков используются разграничение доступа, авторизация пользователей и базовые меры защиты серверной части.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>Передача данных</h2>
+                <p>Персональные данные не передаются третьим лицам без необходимости. Исключение составляют случаи, связанные с выполнением требований законодательства или техническим обеспечением работы сервиса.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>Обращения пользователей</h2>
+                <p>Пользователь может направить вопрос через страницу «Контакты». Обращение сохраняется в административной панели и используется только для обработки запроса.</p>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}
