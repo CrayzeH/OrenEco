@@ -184,20 +184,6 @@ function initParallax() {
     });
 }
 
-// Бургер-меню
-function initBurgerMenu() {
-    const burger = document.querySelector('.burger');
-    const mobileMenu = document.querySelector('.mobile-menu');
-
-    if (burger && mobileMenu) {
-        burger.addEventListener('click', () => {
-            burger.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        });
-    }
-}
-
 // Плавный параллакс для секций при наведении (опционально)
 function initMouseParallax() {
     const hero = document.querySelector('.hero');
@@ -226,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeaderScroll();
     initRevealAnimations();
     initParallax();
-    initBurgerMenu();
     initMouseParallax();
 });
     </script>
