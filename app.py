@@ -1091,6 +1091,65 @@ def comment_article(article_id):
     return jsonify({'success': True})
 
 
+@app.route('/api/admin/articles')
+@admin_required
+def admin_get_articles():
+    """Админ: получить все статьи вместе с данными автора"""
+    db = get_db()
+    articles = db.execute('''
+        SELECT
+            a.id, a.title, a.category, a.summary, a.status, a.created_at,
+            a.published_at, a.views, a.likes, a.created_by,
+            u.username as author_username,
+            u.full_name as author_full_name,
+            u.email as author_email
+        FROM articles a
+        LEFT JOIN users u ON a.created_by = u.id
+        ORDER BY COALESCE(a.published_at, a.created_at) DESC
+    ''').fetchall()
+    db.close()
+    return jsonify([dict(article) for article in articles])
+
+
+@app.route('/api/admin/articles/<int:article_id>/status', methods=['PUT'])
+@admin_required
+def admin_update_article_status(article_id):
+    """Админ: скрыть или опубликовать статью"""
+    data = request.get_json() or {}
+    status = data.get('status')
+
+    if status not in ['published', 'hidden', 'draft']:
+        return jsonify({'error': 'Некорректный статус статьи'}), 400
+
+    db = get_db()
+    cursor = db.execute('UPDATE articles SET status = ? WHERE id = ?', (status, article_id))
+    db.commit()
+    db.close()
+
+    if cursor.rowcount == 0:
+        return jsonify({'error': 'Статья не найдена'}), 404
+
+    return jsonify({'success': True})
+
+
+@app.route('/api/admin/articles/<int:article_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_article(article_id):
+    """Админ: удалить статью и связанные с ней комментарии"""
+    db = get_db()
+    article = db.execute('SELECT id FROM articles WHERE id = ?', (article_id,)).fetchone()
+
+    if not article:
+        db.close()
+        return jsonify({'error': 'Статья не найдена'}), 404
+
+    db.execute('DELETE FROM article_comments WHERE article_id = ?', (article_id,))
+    db.execute('DELETE FROM articles WHERE id = ?', (article_id,))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+
 @app.route('/api/generate-article', methods=['POST'])
 @expert_required
 def generate_article():
@@ -1333,6 +1392,8 @@ def admin_get_stats():
     total_expertises = db.execute('SELECT COUNT(*) as count FROM user_expertise_results').fetchone()['count']
     total_messages = db.execute('SELECT COUNT(*) as count FROM contact_messages').fetchone()['count']
     new_messages = db.execute("SELECT COUNT(*) as count FROM contact_messages WHERE status = 'new'").fetchone()['count']
+    total_articles = db.execute('SELECT COUNT(*) as count FROM articles').fetchone()['count']
+    hidden_articles = db.execute("SELECT COUNT(*) as count FROM articles WHERE status = 'hidden'").fetchone()['count']
     avg_score = db.execute('SELECT AVG(ai_score) as avg FROM user_expertise_results').fetchone()['avg'] or 0
 
     db.close()
@@ -1343,6 +1404,8 @@ def admin_get_stats():
         'total_expertises': total_expertises,
         'total_messages': total_messages,
         'new_messages': new_messages,
+        'total_articles': total_articles,
+        'hidden_articles': hidden_articles,
         'avg_score': round(avg_score, 1)
     })
 

@@ -229,7 +229,7 @@
         }
 
         /* Tables */
-        .users-table, .projects-table, .contact-messages-table {
+        .users-table, .projects-table, .contact-messages-table, .articles-table {
             background: white;
             border-radius: 24px;
             padding: 1.5rem;
@@ -682,7 +682,7 @@
 }
 
 /* Reset any conflicting styles */
-.users-table, .projects-table, .contact-messages-table {
+.users-table, .projects-table, .contact-messages-table, .articles-table {
     background: white !important;
     border-radius: 24px !important;
     padding: 1.5rem !important;
@@ -968,7 +968,8 @@ body main {
 
     .users-table,
     .projects-table,
-    .contact-messages-table {
+    .contact-messages-table,
+    .articles-table {
         overflow-x: auto;
     }
 }
@@ -1127,6 +1128,75 @@ body main {
     gap: 0.5rem;
     flex-wrap: wrap;
 }
+
+.articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.article-admin-card {
+    border: 1px solid #e0ecd9;
+    border-radius: 18px;
+    padding: 1rem;
+    background: #fbfdf9;
+}
+
+.article-admin-header,
+.article-admin-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.article-admin-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.article-admin-title strong {
+    color: #1f3323;
+    font-size: 1.05rem;
+}
+
+.article-admin-meta,
+.article-admin-author {
+    color: #607d5f;
+    font-size: 0.92rem;
+}
+
+.article-admin-summary {
+    margin: 0.85rem 0;
+    color: #2f3d31;
+    line-height: 1.55;
+}
+
+.article-status {
+    border-radius: 999px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.article-status.published {
+    background: #eef5ec;
+    color: #2e7d32;
+}
+
+.article-status.hidden,
+.article-status.draft {
+    background: #f3f4f6;
+    color: #607d5f;
+}
+
+.article-admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
     </style>
 
     <!-- Full Width Hero Banner -->
@@ -1179,6 +1249,10 @@ body main {
             <button class="admin-tab" type="button" data-admin-tab="messages">
                 <i class="fas fa-inbox"></i>
                 <span>Обращения</span>
+            </button>
+            <button class="admin-tab" type="button" data-admin-tab="articles">
+                <i class="fas fa-newspaper"></i>
+                <span>Статьи</span>
             </button>
         </div>
 
@@ -1251,6 +1325,23 @@ body main {
             </div>
             <div id="messages-list" class="messages-list scroll-panel">
                 <div class="loading">Загрузка обращений...</div>
+            </div>
+        </div>
+
+        <!-- Articles Section -->
+        <div class="articles-table admin-section" id="admin-section-articles">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-newspaper"></i>
+                    <span>Управление статьями</span>
+                </h3>
+                <div class="section-tools">
+                    <input class="admin-search" id="articles-search" type="search" placeholder="Поиск статей">
+                    <span class="section-count" id="articles-count">0</span>
+                </div>
+            </div>
+            <div id="articles-list" class="articles-list scroll-panel">
+                <div class="loading">Загрузка статей...</div>
             </div>
         </div>
     </div>
@@ -1382,6 +1473,23 @@ body main {
         let allUsers = [];
         let allProjects = [];
         let allMessages = [];
+        let allArticles = [];
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(button => {
+                button.classList.toggle('active', button.dataset.adminTab === tab);
+            });
+
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.toggle('active', section.id === `admin-section-${tab}`);
+            });
+        }
+
+        document.querySelector('.admin-tabs')?.addEventListener('click', (event) => {
+            const button = event.target.closest('.admin-tab');
+            if (!button) return;
+            switchAdminTab(button.dataset.adminTab);
+        });
 
         async function loadStats() {
             try {
@@ -1423,6 +1531,13 @@ body main {
                     </div>
                     <div class="stat-value">${stats.total_messages || 0}</div>
                     <div class="stat-label">Обращений</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <div class="stat-value">${stats.total_articles || 0}</div>
+                    <div class="stat-label">Статей</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -1639,6 +1754,136 @@ body main {
             }
         }
 
+        async function loadArticles() {
+            try {
+                const res = await fetch('/api/admin/articles');
+                const articles = await res.json();
+                allArticles = articles;
+                renderArticles();
+            } catch (error) {
+                console.error('Ошибка загрузки статей:', error);
+                document.getElementById('articles-list').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Ошибка загрузки статей</p></div>';
+            }
+        }
+
+        function renderArticles() {
+            const search = document.getElementById('articles-search')?.value.toLowerCase().trim() || '';
+            const filteredArticles = allArticles.filter(article => [
+                article.id,
+                article.title,
+                article.category,
+                article.summary,
+                article.status,
+                article.author_full_name,
+                article.author_username,
+                article.author_email
+            ].join(' ').toLowerCase().includes(search));
+
+            document.getElementById('articles-count').textContent = `${filteredArticles.length}/${allArticles.length}`;
+            const container = document.getElementById('articles-list');
+
+            if (filteredArticles.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>Статьи не найдены</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredArticles.map(article => {
+                const author = article.author_full_name || article.author_username || 'Автор не найден';
+                const status = article.status || 'published';
+                const nextStatus = status === 'published' ? 'hidden' : 'published';
+                const statusAction = status === 'published' ? 'Скрыть' : 'Показать';
+                const statusIcon = status === 'published' ? 'fa-eye-slash' : 'fa-eye';
+
+                return `
+                    <div class="article-admin-card">
+                        <div class="article-admin-header">
+                            <div class="article-admin-title">
+                                <strong>${escapeHtml(article.title)}</strong>
+                                <span class="article-admin-meta">
+                                    <i class="fas fa-tag"></i>
+                                    ${escapeHtml(article.category || 'Без категории')}
+                                    ·
+                                    <i class="fas fa-clock"></i>
+                                    ${formatDate(article.published_at || article.created_at)}
+                                </span>
+                            </div>
+                            <span class="article-status ${status}">${getArticleStatusLabel(status)}</span>
+                        </div>
+                        <div class="article-admin-summary">${escapeHtml(article.summary || 'Краткое описание не указано')}</div>
+                        <div class="article-admin-footer">
+                            <div class="article-admin-author">
+                                <i class="fas fa-user-pen"></i>
+                                ${escapeHtml(author)}
+                                ${article.author_email ? ` · ${escapeHtml(article.author_email)}` : ''}
+                                <br>
+                                <i class="fas fa-chart-simple"></i>
+                                Просмотры: ${article.views || 0}, отметки: ${article.likes || 0}
+                            </div>
+                            <div class="article-admin-actions">
+                                <button class="btn-icon" onclick="changeArticleStatus(${article.id}, '${nextStatus}')">
+                                    <i class="fas ${statusIcon}"></i>
+                                    <span>${statusAction}</span>
+                                </button>
+                                <button class="btn-icon" onclick="deleteArticle(${article.id})" style="background: #fdecea; color: #d32f2f;">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Удалить</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getArticleStatusLabel(status) {
+            const labels = {
+                published: 'Опубликована',
+                hidden: 'Скрыта',
+                draft: 'Черновик'
+            };
+            return labels[status] || labels.published;
+        }
+
+        async function changeArticleStatus(articleId, status) {
+            try {
+                const res = await fetch(`/api/admin/articles/${articleId}/status`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status})
+                });
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Ошибка изменения статуса статьи');
+                }
+
+                await loadArticles();
+                await loadStats();
+            } catch (error) {
+                alert(error.message || 'Ошибка при изменении статуса статьи');
+            }
+        }
+
+        async function deleteArticle(articleId) {
+            if (!confirm('Удалить статью? Это действие нельзя отменить.')) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/admin/articles/${articleId}`, {method: 'DELETE'});
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Ошибка удаления статьи');
+                }
+
+                await loadArticles();
+                await loadStats();
+            } catch (error) {
+                alert(error.message || 'Ошибка при удалении статьи');
+            }
+        }
+
         async function changeRole(userId, newRole) {
             try {
                 await fetch(`/api/admin/users/${userId}/role`, {
@@ -1772,23 +2017,10 @@ body main {
             openModal();
         });
 
-        document.querySelectorAll('.admin-tab').forEach(button => {
-            button.addEventListener('click', () => {
-                const tab = button.dataset.adminTab;
-
-                document.querySelectorAll('.admin-tab').forEach(item => {
-                    item.classList.toggle('active', item === button);
-                });
-
-                document.querySelectorAll('.admin-section').forEach(section => {
-                    section.classList.toggle('active', section.id === `admin-section-${tab}`);
-                });
-            });
-        });
-
         document.getElementById('users-search').addEventListener('input', renderUsers);
         document.getElementById('projects-search').addEventListener('input', renderProjects);
         document.getElementById('messages-search').addEventListener('input', renderMessages);
+        document.getElementById('articles-search').addEventListener('input', renderArticles);
 
         window.onclick = function (event) {
             if (event.target === document.getElementById('project-modal')) {
@@ -1800,5 +2032,6 @@ body main {
         loadUsers();
         loadProjects();
         loadMessages();
+        loadArticles();
     </script>
 {% endblock %}
