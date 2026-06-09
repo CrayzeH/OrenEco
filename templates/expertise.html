@@ -242,9 +242,27 @@
     .detail-row {
         display: flex;
         justify-content: space-between;
+        gap: 14px;
         padding: 10px 0;
         border-bottom: 1px solid #eaf0e5;
         font-size: 0.85rem;
+    }
+
+    .detail-row span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-row span:first-child {
+        flex: 0 0 46%;
+        color: #5f745f;
+    }
+
+    .detail-row span:last-child {
+        flex: 1;
+        text-align: right;
+        font-weight: 600;
+        color: #24382a;
     }
 
     /* форма экспертизы */
@@ -501,8 +519,64 @@
 
     @media (max-width: 700px) {
         .expertise-wrap { padding: 0 16px; margin-top: 90px; }
-        .details-grid { padding: 20px; }
+        .projects-grid { grid-template-columns: 1fr; gap: 18px; }
+        .project-tile { padding: 18px; border-radius: 22px; }
+        .tile-header,
+        .tile-footer {
+            align-items: flex-start;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tile-footer {
+            flex-direction: column;
+        }
+        .stats-row {
+            gap: 8px;
+            font-size: 0.76rem;
+        }
+        .details-head { padding: 22px 20px; }
+        .details-head h2 {
+            font-size: 1.35rem;
+            overflow-wrap: anywhere;
+        }
+        .details-head p {
+            overflow-wrap: anywhere;
+        }
+        .details-grid {
+            grid-template-columns: 1fr;
+            padding: 18px;
+            gap: 16px;
+        }
+        .detail-card {
+            padding: 16px;
+            border-radius: 18px;
+        }
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4px;
+            padding: 9px 0;
+            font-size: 0.82rem;
+        }
+        .detail-row span:first-child,
+        .detail-row span:last-child {
+            flex: none;
+            text-align: left;
+        }
+        .detail-row span:last-child {
+            font-size: 0.9rem;
+        }
         .decision-row { flex-direction: column; }
+        .decision-label {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 18px;
+        }
+        .expertise-form,
+        .result-panel {
+            padding: 22px 18px;
+            border-radius: 24px;
+        }
         .auth-block-inner { padding: 32px 24px; }
         .auth-block-modern h3 { font-size: 1.4rem; }
         .auth-buttons { flex-direction: column; width: 100%; }
@@ -666,6 +740,19 @@
         renderDetails(currentProject);
         renderForm();
         $('resultArea').style.display = 'none';
+        scrollToProjectDetails();
+    }
+
+    function scrollToProjectDetails() {
+        const details = $('detailsArea');
+        if (!details) return;
+
+        const headerOffset = 92;
+        const top = details.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+        window.scrollTo({
+            top: Math.max(top, 0),
+            behavior: 'smooth'
+        });
     }
 
     function renderDetails(p) {
