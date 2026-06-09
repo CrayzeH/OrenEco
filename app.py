@@ -62,6 +62,116 @@ def check_password(password, password_hash):
     return hash_password(password) == password_hash
 
 
+def normalize_keywords(value):
+    if not value:
+        return []
+
+    if isinstance(value, str):
+        raw_items = re.split(r'[,;\n\r#]+', value)
+    elif isinstance(value, list):
+        raw_items = []
+        for item in value:
+            if isinstance(item, str):
+                raw_items.extend(re.split(r'[,;\n\r#]+', item))
+            else:
+                raw_items.append(str(item))
+    else:
+        raw_items = [str(value)]
+
+    keywords = []
+    seen = set()
+    for item in raw_items:
+        keyword = re.sub(r'\s+', ' ', item).strip(' .,:;#\t')
+        if not keyword:
+            continue
+
+        key = keyword.lower()
+        if key in seen:
+            continue
+
+        seen.add(key)
+        keywords.append(keyword)
+
+    return keywords
+
+
+def strip_html(value):
+    if not value:
+        return ''
+    text = re.sub(r'<[^>]+>', ' ', value)
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
+
+
+def parse_generated_article(ai_response, topic):
+    text = ai_response or ''
+    text = re.sub(r'(?:Оценка|Score)\s*:\s*\d{1,2}\s*/\s*10', '', text, flags=re.IGNORECASE).strip()
+
+    title = ''
+    title_patterns = [
+        r'<h1[^>]*>(.*?)</h1>',
+        r'<h2[^>]*>(.*?)</h2>',
+        r'^\s*(?:Заголовок|Название)\s*[:\-]\s*(.+)$'
+    ]
+    for pattern in title_patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE | re.DOTALL | re.MULTILINE)
+        if match:
+            title = strip_html(match.group(1))
+            break
+    if not title:
+        title = f'Статья: {topic}'
+
+    plain_text = strip_html(text)
+    keyword_source = ''
+    keyword_match = re.search(
+        r'(?:Ключевые слова|Ключевые слова статьи|Keywords)\s*[:\-]\s*(.+?)(?:(?:Оценка|Score)\s*[:\-]|\Z)',
+        plain_text,
+        flags=re.IGNORECASE | re.DOTALL
+    )
+    if keyword_match:
+        keyword_source = keyword_match.group(1)
+
+    keywords = normalize_keywords(keyword_source)
+    if not keywords:
+        keywords = normalize_keywords([topic])
+
+    def remove_keyword_paragraph(match):
+        paragraph = match.group(0)
+        if re.search(r'(?:Ключевые слова|Ключевые слова статьи|Keywords)', strip_html(paragraph), flags=re.IGNORECASE):
+            return ''
+        return paragraph
+
+    text = re.sub(r'<p[^>]*>.*?</p>', remove_keyword_paragraph, text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(
+        r'(?:Ключевые слова|Ключевые слова статьи|Keywords)\s*[:\-].*$',
+        '',
+        text,
+        flags=re.IGNORECASE | re.MULTILINE
+    ).strip()
+
+    paragraphs = re.findall(r'<p[^>]*>(.*?)</p>', text, flags=re.IGNORECASE | re.DOTALL)
+    summary = ''
+    for paragraph in paragraphs:
+        candidate = strip_html(paragraph)
+        if candidate and len(candidate) >= 40:
+            summary = candidate
+            break
+    if not summary:
+        summary = strip_html(text)[:260]
+    summary = summary[:320].strip()
+
+    if not re.search(r'<(h2|h3|p|ul|li)[\s>]', text, flags=re.IGNORECASE):
+        safe_text = strip_html(text)
+        text = ''.join(f'<p>{part.strip()}</p>' for part in re.split(r'\n{2,}', safe_text) if part.strip())
+
+    return {
+        'title': title,
+        'summary': summary,
+        'content': text,
+        'keywords': keywords
+    }
+
+
 # Декораторы для проверки ролей
 def login_required(f):
     @wraps(f)
@@ -918,7 +1028,7 @@ def get_articles():
     for a in articles:
         a_dict = dict(a)
         a_dict['authors'] = json.loads(a_dict['authors']) if a_dict['authors'] else []
-        a_dict['keywords'] = json.loads(a_dict['keywords']) if a_dict['keywords'] else []
+        a_dict['keywords'] = normalize_keywords(json.loads(a_dict['keywords']) if a_dict['keywords'] else [])
         result.append(a_dict)
     return jsonify(result)
 
@@ -950,7 +1060,7 @@ def get_article(article_id):
 
     result = dict(article)
     result['authors'] = json.loads(result['authors']) if result['authors'] else []
-    result['keywords'] = json.loads(result['keywords']) if result['keywords'] else []
+    result['keywords'] = normalize_keywords(json.loads(result['keywords']) if result['keywords'] else [])
     result['comments'] = [dict(c) for c in comments]
     return jsonify(result)
 
@@ -994,33 +1104,27 @@ def generate_article():
     prompt = f"""Напиши научно-популярную статью на тему "{topic}" для экологического портала.
 Категория: {category}
 
-Требования:
-1. Заголовок
-2. Краткая аннотация (2-3 предложения)
-3. Введение с актуальностью
-4. Основная часть (2-3 раздела с подзаголовками)
-5. Заключение и выводы
-6. Список ключевых слов
+Строго соблюдай структуру:
+<h2>Заголовок статьи</h2>
+<p>Аннотация из 2-3 предложений.</p>
+<h3>Введение</h3>
+<p>Текст введения.</p>
+<h3>Основная часть</h3>
+<p>Текст основной части.</p>
+<h3>Практическое значение</h3>
+<p>Текст раздела.</p>
+<h3>Заключение</h3>
+<p>Текст заключения.</p>
+<p><strong>Ключевые слова:</strong> тег 1, тег 2, тег 3, тег 4, тег 5</p>
 
-Используй HTML-теги: <h2>, <h3>, <p>, <ul>, <li>.
-
-В конце укажи: Оценка: X/10 (для проверки качества)"""
+Используй только HTML-теги <h2>, <h3>, <p>, <ul>, <li>, <strong>.
+Ключевые слова обязательно разделяй запятыми.
+Не добавляй Markdown-разметку."""
 
     ai_response, _ = ask_gigachat(prompt)
+    article = parse_generated_article(ai_response, topic)
 
-    # Извлекаем заголовок
-    title_match = re.search(r'<h2>(.*?)</h2>', ai_response)
-    title = title_match.group(1) if title_match else f"Статья: {topic}"
-
-    # Извлекаем аннотацию
-    summary_match = re.search(r'<p>(.*?)</p>', ai_response)
-    summary = summary_match.group(1)[:200] if summary_match else ai_response[:200]
-
-    return jsonify({
-        'title': title,
-        'content': ai_response,
-        'summary': summary
-    })
+    return jsonify(article)
 
 
 @app.route('/api/admin/projects', methods=['GET'])
@@ -1251,6 +1355,8 @@ def create_article():
     if not all([data.get('title'), data.get('content'), data.get('summary')]):
         return jsonify({'error': 'Заполните все обязательные поля'}), 400
 
+    keywords = normalize_keywords(data.get('keywords', []))
+
     db = get_db()
     cursor = db.execute('''
         INSERT INTO articles (title, authors, category, content, summary, keywords, created_by, published_at, status)
@@ -1261,7 +1367,7 @@ def create_article():
         data.get('category', 'Экология'),
         data['content'],
         data['summary'],
-        json.dumps(data.get('keywords', [])),
+        json.dumps(keywords, ensure_ascii=False),
         session['user_id']
     ))
     db.commit()
